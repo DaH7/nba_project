@@ -10,11 +10,6 @@ from tabulate import tabulate
 import os
 import mplcursors
 
-# exp_stand_df = pd.read_csv('expanded_standings_2024.csv')
-# player_season_df = pd.read_csv('player_season_stat/nba_season_2024_per game.csv')
-
-# new_player_season_df = player_season_df[player_season_df.MP >5]
-# print(tabulate(new_player_season_df, headers='keys', tablefmt='grid'))
 
 
 def cumulative_stat(directory,stat):
@@ -26,16 +21,21 @@ def cumulative_stat(directory,stat):
             year = int(''.join(filter(str.isdigit,file))) #grabs year from csv name
             player_season_df = pd.read_csv(file_path)
             new_player_season_df = player_season_df[player_season_df.MP > 5] # players who averages more than 5 mins a game
-            avg = new_player_season_df.loc[:, "PTS"]
+            if stat not in new_player_season_df: #checks if stat exist
+                avg = 0
+            else:
+                avg = new_player_season_df.loc[:, stat]
+
             temp_df = pd.DataFrame({
                 'Year': [year],
                 'Mean': [np.mean(avg)],
                 'Median': [np.median(avg)],
                 'Max': [np.max(avg)],
                 '25th percentile': [np.percentile(avg,25)],
-                '50th percentile': [np.percentile(avg, 50)],
                 '75th percentile': [np.percentile(avg, 75)],
-                'Sample Size': [len(avg)]
+                '90th percentile': [np.percentile(avg, 90)],
+                '95th percentile': [np.percentile(avg, 95)],
+                'Sample Size': [len(avg) if avg is not None and not isinstance(avg, int) else 0] #if there is no data, len is zero
             })
             combined_df = pd.concat([combined_df,temp_df.round(2)],ignore_index = True)
     return combined_df
@@ -66,11 +66,17 @@ def norm_dist(stat,name):
     plt.show()
 
 
-# norm_dist(avg_pts_2024,'Avg_Pts_2024')
-# print(cumulative_stat('player_season_stat','PTS')['Year'])
-print(tabulate(cumulative_stat('player_season_stat','PTS'), headers='keys', tablefmt='grid'))
-line_plot(cumulative_stat('player_season_stat','PTS')['Year'],
-          cumulative_stat('player_season_stat','PTS')['75th percentile'],
-          'avg pts vs year',
-          'year',
-          'pts')
+if __name__ == "__main__":
+    # exp_stand_df = pd.read_csv('expanded_standings_2024.csv')
+    player_season_df = pd.read_csv('player_season_stat/nba_season_1976_per game.csv')
+    new_player_season_df = player_season_df[player_season_df.MP >5].head()
+    # print(tabulate(new_player_season_df, headers='keys', tablefmt='grid'))
+
+    # norm_dist(avg_pts_2024,'Avg_Pts_2024')
+    print(tabulate(cumulative_stat('player_season_stat','FTA'), headers='keys', tablefmt='grid'))
+
+    line_plot(cumulative_stat('player_season_stat','FTA')['Year'],
+              cumulative_stat('player_season_stat','FTA')['Max'],
+              'avg pts vs year',
+              'year',
+              'pts')
