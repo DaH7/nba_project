@@ -20,6 +20,11 @@ QUERIES = {
         select distinct("Team") from final.key_all_player_2025 
         order by "Team" asc
         """,
+
+    "allstar_team":
+    """
+    select * from final.nba_allstar_2025
+    """
 }
 engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}')
 
@@ -30,12 +35,18 @@ def removing_rows(root_dir):
             file_path = os.path.join(root_dir, file) #creates path
 
             # df = pd.read_csv(file_path)
-            df = pd.read_csv(file_path, header=1)  ##skips 1st row and uses 2nd as header
+            df = pd.read_csv(file_path)  ##skips 1st row and uses 2nd as header
             # df = df.iloc[0:]  # drop 1st row
             # df = df.iloc[:-1]  #drops last row
 
             df.to_csv(file_path, index=False)  #back to csv
             print(f'{file} saved')
+
+def remove_col(csv_file):
+    df = pd.read_csv(csv_file)
+    df = df.iloc[:,:-1]
+    df.to_csv(csv_file, index=False)
+    print(f'{csv_file} saved')
 
 def awards_season_retool(root_dir):
     for file in os.listdir(root_dir):
@@ -48,9 +59,20 @@ def awards_season_retool(root_dir):
             df.to_csv(file_path, index=False)
             print(f'{file} saved')
 
-def team_retool(csv_file):
+def team_retool(query,type):
+    '''
+    sql: from db
+    csv : from csv
+    '''
     # add 2 new columns, playoffs and Tm (the abbrivations for team)
-    df = pd.read_csv(csv_file)
+    if type == 'csv':
+        df = pd.read_csv(query)
+    elif type == 'sql':
+        query = QUERIES.get(query,None)
+        df = pd.read_sql(query,engine)
+    else:
+        raise ValueError("source_type must be 'sql' or 'csv'")
+
     df['abrv_team'] = ''
     df['playoff'] = ''
     # if team has * in their name, playoffs columns is yes, otherwise no
@@ -174,7 +196,7 @@ def team_retool(csv_file):
     # Denver Nuggets
     df.loc[(df['Team'] == 'Denver Nuggets') & (df['season'] <= 1950), 'abrv_team'] = 'DNN'
 
-    df.to_csv(f'retooled_{csv_file}', index=False)
+    df.to_csv(f'retooled_{type}', index=False)
     return print(df)
 
 def franchise_grouping(csv_file):
@@ -272,6 +294,7 @@ def db_to_csv(db_query):
 if __name__ == "__main__":
     # removing_rows('awards')
     # awards_season_retool('awards')
-    team_retool('SEASON_TEAM_TOTAL.csv')
+    # team_retool( "allstar_team",'sql')
+    remove_col('../retooled_sql')
     # franchise_grouping('retooled_og_team.csv')
     # db_to_csv('SEASON_TEAM_TOTAL')

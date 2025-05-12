@@ -92,7 +92,7 @@ QUERIES = {
         """,
     "SMOY":
         """
-        select * from staging.smoy
+        select * from final.smoy_2025
         """,
     "TEMP":
         """
@@ -227,5 +227,5 @@ def matching_team(query_key, query_df,type):
 
 
 if __name__ == "__main__":
-    matching_team_id("TEAM_KEY","MIP","sql")
+    matching_team_id("TEAM_KEY","DRAFT_PRIMARY_KEY","sql")
     # matching_team("TEAM_KEY","TEMP")
