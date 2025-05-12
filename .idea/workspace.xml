@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="loading df to postgres">
+      <change afterPath="$PROJECT_DIR$/.idea/Nba_Analysis.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/generating_id.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/matching_ids_and_teams.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nba_dash_app/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nba_dash_app/assets/custom.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nba_dash_app/callbacks.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nba_dash_app/config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nba_dash_app/data_loader.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nba_dash_app/figures.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nba_dash_app/layout.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/og_dash.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/regression_analysis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testing_scripts.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/updating_existing_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/old_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_cleaning.py" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;DaH7&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/DaH7/nba_analysis&quot;,
+    &quot;accountId&quot;: &quot;3d6cbf8a-9af5-4ea1-8de5-f4bff3c427e3&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2v5mPrgU8U7kuWOKeIBEdiYXt3g" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Python tests in analysis.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in data_pulling.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_cleaning.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_pulling.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_tools.executor&quot;: &quot;Run&quot;,
+    &quot;Python.generating_player_id.executor&quot;: &quot;Run&quot;,
+    &quot;Python.loading_to_db.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.matching_ids_and_teams.executor&quot;: &quot;Run&quot;,
+    &quot;Python.matching_player_ids.executor&quot;: &quot;Run&quot;,
+    &quot;Python.scratch_1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.simple_graphs.executor&quot;: &quot;Run&quot;,
+    &quot;Python.testing_scripts.executor&quot;: &quot;Run&quot;,
+    &quot;Python.updating_existing_data.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;nba__analysis&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/dahan/PycharmProjects/Nba_Analysis/nba_dash_app&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;,
+      &quot;CSS&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\nba_dash_app" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\season_team_total" />
+      <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis" />
+      <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\team_avg" />
+      <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\team_total" />
+      <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\test" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-ce3d9afa04ac-ba05f1cad1b1-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-242.20224.347" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="" />
+      <created>1743443287733</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1743443287733</updated>
+    </task>
+    <task id="LOCAL-00001" summary="initial analysis functions">
+      <option name="closed" value="true" />
+      <created>1743631640300</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1743631640300</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Analysis functions">
+      <option name="closed" value="true" />
+      <created>1743642766446</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1743642766446</updated>
+    </task>
+    <task id="LOCAL-00003" summary="updated functions">
+      <option name="closed" value="true" />
+      <created>1744146542803</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1744146542803</updated>
+    </task>
+    <task id="LOCAL-00004" summary="extracting and processing data from basketball reference">
+      <option name="closed" value="true" />
+      <created>1744146583266</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1744146583266</updated>
+    </task>
+    <task id="LOCAL-00005" summary="data cleaning functions">
+      <option name="closed" value="true" />
+      <created>1744146612520</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1744146612520</updated>
+    </task>
+    <task id="LOCAL-00006" summary="all the data pulled so far">
+      <option name="closed" value="true" />
+      <created>1746680982140</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1746680982140</updated>
+    </task>
+    <task id="LOCAL-00007" summary="general functions for data manipulation">
+      <option name="closed" value="true" />
+      <created>1747080044576</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1747080044576</updated>
+    </task>
+    <task id="LOCAL-00008" summary="loading df to postgres">
+      <option name="closed" value="true" />
+      <created>1747080084630</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1747080084630</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="initial analysis functions" />
+    <MESSAGE value="Analysis functions" />
+    <MESSAGE value="updated functions" />
+    <MESSAGE value="extracting and processing data from basketball reference" />
+    <MESSAGE value="data cleaning functions" />
+    <MESSAGE value="all the data pulled so far" />
+    <MESSAGE value="general functions for data manipulation" />
+    <MESSAGE value="loading df to postgres" />
+    <option name="LAST_COMMIT_MESSAGE" value="loading df to postgres" />
+  </component>
+</project>

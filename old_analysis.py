@@ -113,7 +113,7 @@ def norm_dist(stat,name):
     plt.plot(x, p)
     plt.axvline(np.mean(stat), color='red', label = f'mean: {np.mean(stat):.2f}')
     plt.axvline(np.median(stat), color='green', label = f'median: {np.median(stat):.2f}')
-    stat_w, p_value = shapiro(stat) # test for normality
+    stat_w, p_value = shapiro(stat) # season_team_total for normality
     plt.xlabel(f'{name}')
     plt.ylabel('Probability  Density')
     plt.title(f'Normal Distribution - {name} \nKurtosis - {kurt:.2f} \n"Shapiro-Wilk p-value:{p_value:.2f}')
@@ -167,8 +167,8 @@ if __name__ == "__main__":
     #                 )
 
     # print(tabulate(cumulative_stat_team('season_team_stat_total','PTS'), headers='keys', tablefmt='grid'))
-    line_plot(cumulative_stat_team('player_season_stat','Age')['Year'],
-              cumulative_stat_team('player_season_stat','Age')['Mean'],
+    line_plot(cumulative_stat_team('player_season_stat_avg','Age')['Year'],
+              cumulative_stat_team('player_season_stat_avg','Age')['Mean'],
               'Total Points over Years',
               'Year',
               'Total Points')
