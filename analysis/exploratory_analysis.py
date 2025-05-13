@@ -116,26 +116,55 @@ def season_avg(stat):
     # categorizes the value in the df
     df['Percentile'] = df[f'Average {stat}'].apply(percentile_group)
 
-    fig = px.bar(
-        df,
-        x='season',
-        y=f'Average {stat}',
-        color='Percentile',
-        color_discrete_map={
-            'Top 10%': '#006400',  # dark green
-            'Middle 80%': '#6495ED',  # cornflowerblue
-            'Bot 10%': '#DC143C'  # Crimson
-        },
-        title=f'Average {stat} per Season',
-        labels={f'{stat}': f'Average {stat} Per Game'},
-        hover_data={'Player Count': True,
-                    'season': True,
-                    f'Average {stat}': ':.1f'}
+    #assigning colors to bar chart
+    bar_color = {
+        'Top 10%': '#006400',  # dark green
+        'Middle 80%': '#6495ED',  # cornflowerblue
+        'Bot 10%': '#DC143C'  # crimson
+    }
+    bar_colors = df['Percentile'].map(bar_color)
+
+    #initialize plot
+    fig = go.Figure()
+
+    #bar chart with stat averages
+    fig.add_trace(go.Bar(
+        x = df['season'],
+        y = df[f'Average {stat}'],
+        name = f'Average {stat}',
+        marker_color = bar_colors,
+        yaxis = 'y1',
+        hovertext=[f"{s}<br>{v:.1f}" for s, v in zip(df['season'], df[f'Average {stat}'])],
+        hoverinfo='text'
+    ))
+
+    #line chart for player count
+    fig.add_trace(go.Scatter(
+        x = df['season'],
+        y = df['Player Count'],
+        name =  'Player Count',
+        mode = 'lines+markers',
+        line = dict(color = 'orange', width = 2),
+        yaxis = 'y2',
+    ))
+
+    #layout
+    fig.update_layout(
+        title = f'Average {stat} with Player Count per Season',
+        xaxis = dict(title ='Season'),
+        yaxis = dict(title = f'Average {stat} Per Game'),
+
+        yaxis2 = dict(title = 'Player Count',
+                      overlaying = 'y',
+                      side = 'right'),
+        legend = dict(x = 0.01, y = 0.99),
+        template = 'plotly_white'
     )
+
     fig.show()
 
 
 
 if __name__ == '__main__':
     # stat_leaders('TRB')
-    season_avg("PTS")
+    # season_avg("PTS")
