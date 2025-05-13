@@ -3,14 +3,13 @@ import psycopg2
 import os
 import pandas as pd
 import glob
+from config import DB_CONFIG
 
-user = 'postgres'
-password= 'abc123'
-host = 'localhost'
-port = 5432
-database = 'nba'
 
-engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}')
+
+engine = create_engine(
+    f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
+)
 
 def combining_df(folder):
     expected_col = ["Rk","Team","G","MP","FG","FGA","FG%","3P","3PA","3P%",'2P',"2PA","2P%","FT",

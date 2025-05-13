@@ -1,14 +1,13 @@
 import pandas as pd
 import random
 from sqlalchemy import create_engine
+from config import DB_CONFIG
 
-user = 'postgres'
-password= 'abc123'
-host = 'localhost'
-port = 5432
-database = 'nba'
 
-engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}')
+
+engine = create_engine(
+    f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
+)
 
 query  = """
 select *

@@ -3,12 +3,7 @@ import random
 import re
 from nltk import precision
 from sqlalchemy import create_engine
-
-user = 'postgres'
-password= 'abc123'
-host = 'localhost'
-port = 5432
-database = 'nba'
+from config import DB_CONFIG
 
 QUERIES = {
     "DRAFT_PRIMARY_KEY":
@@ -104,7 +99,9 @@ QUERIES = {
 
 }
 
-engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}')
+engine = create_engine(
+    f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
+)
 
 def matching_player_id(query_key,query_df,type):
     """
