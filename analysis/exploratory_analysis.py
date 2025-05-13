@@ -130,12 +130,10 @@ def season_avg(stat):
     #bar chart with stat averages
     fig.add_trace(go.Bar(
         x = df['season'],
-        y = df[f'Average {stat}'],
+        y = df[f'Average {stat}'].round(1),
         name = f'Average {stat}',
         marker_color = bar_colors,
         yaxis = 'y1',
-        hovertext=[f"{s}<br>{v:.1f}" for s, v in zip(df['season'], df[f'Average {stat}'])],
-        hoverinfo='text'
     ))
 
     #line chart for player count
@@ -153,7 +151,6 @@ def season_avg(stat):
         title = f'Average {stat} with Player Count per Season',
         xaxis = dict(title ='Season'),
         yaxis = dict(title = f'Average {stat} Per Game'),
-
         yaxis2 = dict(title = 'Player Count',
                       overlaying = 'y',
                       side = 'right'),
@@ -167,4 +164,4 @@ def season_avg(stat):
 
 if __name__ == '__main__':
     # stat_leaders('TRB')
-    # season_avg("PTS")
+    season_avg("PTS")
