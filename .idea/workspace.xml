@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="finished ETL pipeline and getting ready for analysis">
+    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="adjusting configs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/analysis/exploratory_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/exploratory_analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/analysis/regression_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/regression_analysis.py" afterDir="false" />
@@ -38,7 +38,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/DaH7/nba_analysis&quot;,
+    &quot;url&quot;: &quot;https://github.com/DaH7/nba_project.git&quot;,
     &quot;accountId&quot;: &quot;3d6cbf8a-9af5-4ea1-8de5-f4bff3c427e3&quot;
   }
 }</component>
@@ -60,11 +60,13 @@
     "Python.data_cleaning.executor": "Run",
     "Python.data_pulling.executor": "Run",
     "Python.data_tools.executor": "Run",
+    "Python.exploratory_analysis.executor": "Run",
     "Python.generating_player_id.executor": "Run",
     "Python.loading_to_db.executor": "Run",
     "Python.main.executor": "Run",
     "Python.matching_ids_and_teams.executor": "Run",
     "Python.matching_player_ids.executor": "Run",
+    "Python.regression_analysis.executor": "Run",
     "Python.scratch_1.executor": "Run",
     "Python.simple_graphs.executor": "Run",
     "Python.testing_scripts.executor": "Run",
@@ -204,7 +206,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747090145338</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="adjusting configs">
+      <option name="closed" value="true" />
+      <created>1747113982548</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1747113982548</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -218,6 +228,7 @@
     <MESSAGE value="loading df to postgres" />
     <MESSAGE value="initial" />
     <MESSAGE value="finished ETL pipeline and getting ready for analysis" />
-    <option name="LAST_COMMIT_MESSAGE" value="finished ETL pipeline and getting ready for analysis" />
+    <MESSAGE value="adjusting configs" />
+    <option name="LAST_COMMIT_MESSAGE" value="adjusting configs" />
   </component>
 </project>
