@@ -9,6 +9,7 @@
       <change beforePath="$PROJECT_DIR$/analysis/exploratory_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/exploratory_analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/analysis/regression_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/regression_analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nba_dash_app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing_scripts.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing_scripts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,37 +52,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python tests.Python tests in analysis.py.executor": "Run",
-    "Python tests.Python tests in data_pulling.py.executor": "Run",
-    "Python.analysis.executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.data_cleaning.executor": "Run",
-    "Python.data_pulling.executor": "Run",
-    "Python.data_tools.executor": "Run",
-    "Python.exploratory_analysis.executor": "Run",
-    "Python.generating_player_id.executor": "Run",
-    "Python.loading_to_db.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.matching_ids_and_teams.executor": "Run",
-    "Python.matching_player_ids.executor": "Run",
-    "Python.regression_analysis.executor": "Run",
-    "Python.scratch_1.executor": "Run",
-    "Python.simple_graphs.executor": "Run",
-    "Python.testing_scripts.executor": "Run",
-    "Python.updating_existing_data.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/dahan/PycharmProjects/Nba_Analysis/nba_dash_app"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Python tests in analysis.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in data_pulling.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_cleaning.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_pulling.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_tools.executor&quot;: &quot;Run&quot;,
+    &quot;Python.exploratory_analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.generating_player_id.executor&quot;: &quot;Run&quot;,
+    &quot;Python.loading_to_db.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.matching_ids_and_teams.executor&quot;: &quot;Run&quot;,
+    &quot;Python.matching_player_ids.executor&quot;: &quot;Run&quot;,
+    &quot;Python.regression_analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.scratch_1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.simple_graphs.executor&quot;: &quot;Run&quot;,
+    &quot;Python.testing_scripts.executor&quot;: &quot;Run&quot;,
+    &quot;Python.updating_existing_data.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/dahan/PycharmProjects/Nba_Analysis/nba_dash_app&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Python",
-      "CSS"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;,
+      &quot;CSS&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\nba_dash_app" />
@@ -238,7 +239,23 @@
       <option name="project" value="LOCAL" />
       <updated>1747177086426</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="added two chart functions">
+      <option name="closed" value="true" />
+      <created>1747177330396</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1747177330396</updated>
+    </task>
+    <task id="LOCAL-00018" summary="added two chart functions">
+      <option name="closed" value="true" />
+      <created>1747177336731</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1747177336731</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
