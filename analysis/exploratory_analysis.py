@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from config import DB_CONFIG
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.io as pio
 
 engine = create_engine(
     f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
@@ -31,6 +32,7 @@ def season_avg_query(stat):
     return f"""
     select avg("{stat}") as "Average {stat}",season, count("Player") as "Player Count"
     from final.season_avg_2025
+    where "G" >= 18 and "MP" >= 10 
     group by season
     order by season
 """
@@ -52,11 +54,18 @@ def top_stat_query (stat):
         from (
         select *,row_number() over (partition by "season" order by "{stat}" desc) as row_nums
         from final.season_avg_2025
+        where "G" >= 18 and "MP" >= 10 
         ) sub
     where row_nums = 1
 """
 
-def stat_leaders(stat):
+def stat_leaders(stat,download):
+    """
+    download:
+        interactive
+        static
+        none
+    """
     query = top_stat_query(stat)
     if query is None:
         raise ValueError(f'Invalid {stat}')
@@ -92,9 +101,22 @@ def stat_leaders(stat):
         labels= {f'{stat}': f'{stat} Per Game'},
         hover_data = {'Player':True,'Team':True,'season': True, f'{stat}': ':.1f'}
     )
-    fig.show()
+    if download == 'static':
+        fig.write_image(f'{stat} Leaders per Season.png',engine="orca")
+        fig.show()
+    elif download == 'interactive':
+        fig.write_html(f'{stat} Leaders per Season.html')
+        fig.show()
+    else:
+        fig.show()
 
-def season_avg(stat):
+def season_avg(stat,download):
+    """
+    download:
+        interactive
+        static
+        none
+    """
     query = season_avg_query(stat)
     if query is None:
         raise ValueError(f'Invalid {stat}')
@@ -133,6 +155,7 @@ def season_avg(stat):
         y = df[f'Average {stat}'].round(1),
         name = f'Average {stat}',
         marker_color = bar_colors,
+        showlegend = False,
         yaxis = 'y1',
     ))
 
@@ -143,6 +166,7 @@ def season_avg(stat):
         name =  'Player Count',
         mode = 'lines+markers',
         line = dict(color = 'orange', width = 2),
+        showlegend = False,
         yaxis = 'y2',
     ))
 
@@ -154,14 +178,21 @@ def season_avg(stat):
         yaxis2 = dict(title = 'Player Count',
                       overlaying = 'y',
                       side = 'right'),
-        legend = dict(x = 0.01, y = 0.99),
-        template = 'plotly_white'
+        legend = dict(x = 1, y = 0.95)
     )
 
-    fig.show()
-
+    if download == 'static':
+        # fig.write_image(f"Average {stat} with Player Count per Season.png")
+        # pio.kaleido.scope.default_format = "png"
+        fig.write_image(f"Average {stat} with Player Count per Season.png", engine="orca")
+        fig.show()
+    elif download == 'interactive':
+        fig.write_html(f"Average {stat} with Player Count per Season.html")
+        fig.show()
+    else:
+        fig.show()
 
 
 if __name__ == '__main__':
-    # stat_leaders('TRB')
-    season_avg("PTS")
+    # stat_leaders('PTS','static')
+    # season_avg("PTS",'static')
