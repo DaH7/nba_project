@@ -1,7 +1,5 @@
 import pandas as pd
 import random
-import re
-from nltk import precision
 from sqlalchemy import create_engine
 from config import DB_CONFIG
 
@@ -221,6 +219,25 @@ def matching_team(query_key, query_df,type):
 
     new_df.to_csv('team_name_test.csv')
     new_df.to_sql('team_name_test', engine, if_exists='replace', index=False)
+
+def generating_new_id(query,id_length):
+    df = pd.read_sql(f'query',engine)
+    print(df)
+
+    def generate_player_id(length):
+        return ''.join([str(random.randint(0,9)) for _ in range(length)])
+
+    player_ids = []
+    for index,row in df.iterrows():
+        random_digits = generate_player_id(f'{id_length}')
+        player_id = f"{9000}{random_digits}"
+        player_ids.append(player_id)
+    df['player_id'] = player_ids
+    df.to_csv('undrafted_player_key', index=False)
+
+    # #to db
+    # df = pd.read_csv('undrafted_player_key')
+    # df.to_sql('undrafted_player_key', engine, if_exists='replace', index=False)
 
 
 if __name__ == "__main__":

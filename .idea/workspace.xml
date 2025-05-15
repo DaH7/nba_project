@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="added two chart functions">
+    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="fixed the charts up and added export option for graphs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/exploratory_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/exploratory_analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/analysis/regression_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/regression_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_loading_and_tools/data_pulling.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/data_pulling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_loading_and_tools/generating_id.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/generating_id.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_loading_and_tools/updating_existing_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/updating_existing_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nba_dash_app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testing_scripts.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing_scripts.py" afterDir="false" />
     </list>
@@ -255,7 +257,23 @@
       <option name="project" value="LOCAL" />
       <updated>1747177336731</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="fixed the charts up and added export option for graphs">
+      <option name="closed" value="true" />
+      <created>1747260916094</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1747260916094</updated>
+    </task>
+    <task id="LOCAL-00020" summary="fixed the charts up and added export option for graphs">
+      <option name="closed" value="true" />
+      <created>1747260923576</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1747260923576</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -271,6 +289,7 @@
     <MESSAGE value="finished ETL pipeline and getting ready for analysis" />
     <MESSAGE value="adjusting configs" />
     <MESSAGE value="added two chart functions" />
-    <option name="LAST_COMMIT_MESSAGE" value="added two chart functions" />
+    <MESSAGE value="fixed the charts up and added export option for graphs" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed the charts up and added export option for graphs" />
   </component>
 </project>
