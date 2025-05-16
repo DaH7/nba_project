@@ -428,7 +428,7 @@ if __name__ == "__main__":
     # franchise_grouping('retooled_og_team.csv')
     # db_to_csv('SEASON_TEAM_TOTAL')
     # seperating_team_records('expanded_standings','expanded_standings')
-    award_check('KEY_MIP','award_adjusted_df','MIP','csv')
+    # award_check('KEY_MIP','award_adjusted_df','MIP','csv')
     # drop_dupes('award_adjusted_df')
 
 

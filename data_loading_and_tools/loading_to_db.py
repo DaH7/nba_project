@@ -12,9 +12,10 @@ engine = create_engine(
 )
 
 def combining_df(folder):
-    expected_col = ["Rk","Team","G","MP","FG","FGA","FG%","3P","3PA","3P%",'2P',"2PA","2P%","FT",
-                    "FTA","FT%","ORB","DRB","TRB","AST","STL","BLK","TOV","PF","PTS","season"
-                    ]
+    expected_col = ["Rk","Team","Overall","Home","Road","E","W","A","C",
+                    "SE","NW","P","SW","Pre","Post","≤3","≥10",
+                    "Oct","Nov","Dec","Jan","Feb","Mar","Apr","season"
+        ]
 
     csv_files = glob.glob(os.path.join(folder,"*.csv"))
     df_list=[]
@@ -51,7 +52,7 @@ def individual_folder_df(folder):
         print(f'{csv_name} uploaded')
 
 def individual_df(file):
-    df = pd.read_csv(file)
+    df = pd.read_csv(f'{file}')
     csv_name = os.path.splitext(os.path.basename(file))[0]
     df.to_sql(f'{csv_name}', con=engine, if_exists='replace', index=False)
     print(f'{csv_name} uploaded')
@@ -59,5 +60,5 @@ def individual_df(file):
 
 
 if __name__ == "__main__":
-    # combining_df("season_team_total")
-    individual_df("../team_id_test.csv")
+    # combining_df("expanded_standings")
+    individual_df("award_adjusted_df")

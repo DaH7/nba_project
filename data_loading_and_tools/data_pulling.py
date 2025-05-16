@@ -308,12 +308,12 @@ def awards(award_type):
 
 
 if __name__ == "__main__":
-    # team_stats(1947,2025,"totals-team")
+    # team_stats(2025,2025,"advanced-team")
     # player_total_stat_pull(1947,2025,"season")
     # player_avg_stat_pull(1947,2024,'playoff')
-    # expanded_standings(1976,2025)
+    # expanded_standings(1947,2025)
     # standings(2024,2024, 'west')
     # all_star_roster(1998,2000)
     # draft_class(1947,1949)
-    # awards('mip')
+    # awards('mvp')
 
