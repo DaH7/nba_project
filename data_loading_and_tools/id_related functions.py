@@ -89,7 +89,7 @@ QUERIES = {
         """,
     "TEMP":
         """
-        select * from team_id_test
+        select * from expanded_standings 
         """
 
 
@@ -241,5 +241,5 @@ def generating_new_id(query,id_length):
 
 
 if __name__ == "__main__":
-    matching_team_id("TEAM_KEY","DRAFT_PRIMARY_KEY","sql")
+    matching_team_id("TEAM_KEY","retooled_sql","csv")
     # matching_team("TEAM_KEY","TEMP")
