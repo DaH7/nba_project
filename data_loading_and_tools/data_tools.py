@@ -18,10 +18,40 @@ QUERIES = {
         order by "Team" asc
         """,
 
-    "allstar_team":
-    """
-    select * from final.nba_allstar_2025
-    """
+        "allstar_team":
+        """
+        select * from final.nba_allstar_2025
+        """,
+
+        "expanded_standings":
+            """
+            select * from expanded_standings
+            """,
+
+    "KEY_DPOY":
+        """
+        select "Player","season","player_id" from final.key_dpoy_2025
+        """,
+
+    "KEY_ALLSTAR":
+        """
+        select "Player","season","player_id" from final.key_allstar_2025
+        """,
+
+    "KEY_MIP":
+        """
+        select "Player","season","player_id" from final.key_mip_2025
+        """,
+
+    "KEY_SMOY":
+        """
+        select "Player","season","player_id" from final.key_smoy_2025
+        """,
+
+    "TEMP":
+        """
+        SELECT * from temp_table
+        """,
 }
 engine = create_engine(
     f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
@@ -34,7 +64,7 @@ def removing_rows(root_dir):
             file_path = os.path.join(root_dir, file) #creates path
 
             # df = pd.read_csv(file_path)
-            df = pd.read_csv(file_path)  ##skips 1st row and uses 2nd as header
+            df = pd.read_csv(file_path, header= 1)  ##skips 1st row and uses 2nd as header
             # df = df.iloc[0:]  # drop 1st row
             # df = df.iloc[:-1]  #drops last row
 
@@ -43,6 +73,7 @@ def removing_rows(root_dir):
 
 def remove_col(csv_file):
     df = pd.read_csv(csv_file)
+    #remove last col
     df = df.iloc[:,:-1]
     df.to_csv(csv_file, index=False)
     print(f'{csv_file} saved')
@@ -195,6 +226,10 @@ def team_retool(query,type):
     # Denver Nuggets
     df.loc[(df['Team'] == 'Denver Nuggets') & (df['season'] <= 1950), 'abrv_team'] = 'DNN'
 
+
+
+
+
     df.to_csv(f'retooled_{type}', index=False)
     return print(df)
 
@@ -282,7 +317,7 @@ def adding_season(folder):
         df_list.append(df)  # fills df_list with csv data
 
     final_df = pd.concat(df_list, ignore_index=True)
-    final_df.to_csv(os.path.join(folder, f"team_total_1975.csv"), index=False)
+    final_df.to_csv(os.path.join(folder, f"{folder}.csv"), index=False)
     print(f"uploaded")
 
 def db_to_csv(db_query):
@@ -290,10 +325,110 @@ def db_to_csv(db_query):
     df = pd.read_sql(query, engine)
     df.to_csv(f'{db_query}.csv', index=False)
 
+def seperating_team_records(query,csv_name):
+    """
+    SEPERATES WIN-LOSS FORMAT INTO ITS OWN COLUMNS
+    """
+    query = QUERIES.get(query, None)
+    df = pd.read_sql(query, engine)
+
+    #splits the records into win and loss columns
+    df[['Overall_W','Overall_L']] = df['Overall'].str.split("-",expand = True)
+    df[['Home_W','Home_L']] = df['Home'].str.split("-", expand = True)
+    df[['Road_W','Road_L']] = df['Road'].str.split("-",expand = True)
+    df[['East_W','East_L']] = df['E'].str.split("-", expand = True)
+    df[['West_W','West_L']] = df['W'].str.split("-",expand = True)
+    df[['Atlantic_W','Atlantic_L']] = df['A'].str.split("-", expand = True)
+    df[['Central_W','Central_L']] = df['C'].str.split("-",expand = True)
+    df[['Southeast_W','Southeast_L']] = df['SE'].str.split("-", expand = True)
+    df[['Northwest_W','Northwest_L']] = df['NW'].str.split("-",expand = True)
+    df[['Pacific_W','Pacific_L']] = df['P'].str.split("-", expand = True)
+    df[['Southwest_W','Southwest_L']] = df['SW'].str.split("-",expand = True)
+    df[['Pre_W','Pre_L']] = df['Pre'].str.split("-", expand = True)
+    df[['Post_W','Post_L']] = df['Post'].str.split("-",expand = True)
+    df[['≤3_W','≤3_L']] = df['≤3'].str.split("-", expand = True)
+    df[['≥10_W','≥10_L']] = df['≥10'].str.split("-",expand = True)
+    df[['Oct_W','Oct_L']] = df['Oct'].str.split("-",expand = True)
+    df[['Nov_W','Nov_L']] = df['Nov'].str.split("-", expand = True)
+    df[['Dec_W','Dec_L']] = df['Dec'].str.split("-",expand = True)
+    df[['Jan_W','Jan_L']] = df['Jan'].str.split("-", expand = True)
+    df[['Feb_W','Feb_L']] = df['Feb'].str.split("-",expand = True)
+    df[['Mar_W','Mar_L']] = df['Mar'].str.split("-", expand = True)
+    df[['Apr_W','Apr_L']] = df['Apr'].str.split("-", expand = True)
+
+    #convert new columns to int
+    for col in df.columns:
+        if col.endswith('_W') or col.endswith('_L'):
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
+
+    df.to_csv(f'{csv_name}.csv', index=False)
+
+def award_check(key,query,award_name,type):
+    if type == 'sql':
+        query = QUERIES.get(query, None)
+        df = pd.read_sql(query, engine)
+    elif type == 'csv':
+        df = pd.read_csv(query)
+    else:
+        raise ValueError('sql or csv only')
+
+    query_2 = QUERIES.get(key, None)
+    key_df = pd.read_sql(query_2, engine)
+
+    if not query:
+        raise ValueError(f"Query/csv '{query}' not found or is None")
+
+    query_2_str = QUERIES.get(key)
+    if not query_2_str:
+        raise ValueError(f"Query key '{key}' not found or is None")
+
+
+    #rename columns in key
+    key_df = key_df.rename(columns={
+        'season': 'award_season',
+        'player_id': 'key_player_id'
+    })
+    key_df = key_df.drop_duplicates(subset=['Player', 'award_season'])
+    key_df = key_df.sort_values('award_season').drop_duplicates('Player') #only check once per player
+
+    #merge the two df
+    df.columns = df.columns.str.strip()
+    key_df.columns = key_df.columns.str.strip()
+    df = df.drop_duplicates()
+
+    df = df.merge(key_df, on= 'Player', how = 'left')
+
+    #check if player won the award
+    df[f'won {award_name}'] = ((df['season'] >= df['award_season'])
+                               & df['award_season'].notna()
+                               & (df['player_id'] == df['key_player_id']))
+
+    #clean data
+    df.drop(columns=['award_season', 'key_player_id'], inplace=True)
+    df.drop_duplicates(inplace=True)
+
+    df.to_csv(f'award_adjusted_df',index=False)
+    print("award_adjusted_df created")
+
+def drop_dupes(csv_file):
+    df = pd.read_csv(csv_file)
+    before = len(df)
+    df.drop_duplicates(inplace=True)
+    after = len(df)
+    df.to_csv(f'award_adjusted_df', index=False)
+    print(f"Duplicates dropped: {before - after}")
+
+
+
 if __name__ == "__main__":
-    # removing_rows('awards')
+    # removing_rows('expanded_standings')
     # awards_season_retool('awards')
-    # team_retool( "allstar_team",'sql')
-    remove_col('../retooled_sql')
+    # team_retool( "expanded_standings",'sql')
+    # remove_col('retooled_sql')
     # franchise_grouping('retooled_og_team.csv')
     # db_to_csv('SEASON_TEAM_TOTAL')
+    # seperating_team_records('expanded_standings','expanded_standings')
+    award_check('KEY_MIP','award_adjusted_df','MIP','csv')
+    # drop_dupes('award_adjusted_df')
+
+
