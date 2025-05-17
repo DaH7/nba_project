@@ -4,16 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="added some more general data cleaning tools and functions">
+    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="added percentile calculations">
       <change afterPath="$PROJECT_DIR$/analysis/regression_analysis_all-star-model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data_loading_and_tools/advance_metrics.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/exploratory_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/exploratory_analysis_counting-stats.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/analysis/regression_analysis.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data_loading_and_tools/data_pulling.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/data_pulling.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data_loading_and_tools/data_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/data_tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_loading_and_tools/id_related functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/id_related functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data_loading_and_tools/loading_to_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/loading_to_db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_loading_and_tools/updating_existing_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/updating_existing_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nba_dash_app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testing_scripts.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing_scripts.py" afterDir="false" />
     </list>
@@ -76,6 +74,7 @@
     "Python.matching_ids_and_teams.executor": "Run",
     "Python.matching_player_ids.executor": "Run",
     "Python.regression_analysis.executor": "Run",
+    "Python.regression_analysis_all-star-model.executor": "Run",
     "Python.scratch_1.executor": "Run",
     "Python.simple_graphs.executor": "Run",
     "Python.testing_scripts.executor": "Run",
@@ -303,7 +302,23 @@
       <option name="project" value="LOCAL" />
       <updated>1747357483550</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="added some more general data cleaning tools and functions">
+      <option name="closed" value="true" />
+      <created>1747367488564</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1747367488564</updated>
+    </task>
+    <task id="LOCAL-00025" summary="added percentile calculations">
+      <option name="closed" value="true" />
+      <created>1747367509234</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1747367509234</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -322,6 +337,7 @@
     <MESSAGE value="fixed the charts up and added export option for graphs" />
     <MESSAGE value="cleaned up and combined id related functions" />
     <MESSAGE value="added some more general data cleaning tools and functions" />
-    <option name="LAST_COMMIT_MESSAGE" value="added some more general data cleaning tools and functions" />
+    <MESSAGE value="added percentile calculations" />
+    <option name="LAST_COMMIT_MESSAGE" value="added percentile calculations" />
   </component>
 </project>

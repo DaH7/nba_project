@@ -71,7 +71,7 @@ QUERIES = {
 
     "MVP":
         """
-        select * from staging.mvp
+        select * from final.mvp_2024
         """,
 
     "MIP":
@@ -101,7 +101,7 @@ engine = create_engine(
     f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
 )
 
-def matching_player_id(query_key,query_df,type):
+def matching_player_id(query_key,query_df,type,to_db='no'):
     """
     sql: ADD THE NEEDED QUERY AND CALL IT TO query_df
     csv: INPUT THE CSV FILE TO query_df
@@ -109,6 +109,7 @@ def matching_player_id(query_key,query_df,type):
 
     query = QUERIES.get(query_key,None)
     key = pd.read_sql(query, engine)
+
     if type == "sql":
         query_2 = QUERIES.get(query_df,None)
         df = pd.read_sql(query_2,engine)
@@ -138,10 +139,16 @@ def matching_player_id(query_key,query_df,type):
     print("Unique Player in key:", key['Player'].nunique())
 
 
-    new_df.to_csv('player_id_test.csv')
-    new_df.to_sql('player_id_test', engine, if_exists='replace', index=False)
 
-def matching_team_id(query_key,query_df,type):
+    new_df.to_csv('player_id_test')
+
+    if to_db == "yes":
+        new_df.to_sql('player_id_test', engine, if_exists='replace', index=False)
+    else:
+        print('No data sent to db')
+
+
+def matching_team_id(query_key,query_df,type,to_db ='no'):
     """
     sql: ADD THE NEEDED QUERY AND CALL IT TO query_df
     csv: INPUT THE CSV FILE TO query_df
@@ -177,10 +184,15 @@ def matching_team_id(query_key,query_df,type):
     print("Unique abrv_teams in key:", key['abrv_team'].nunique())
 
 
-    new_df.to_csv('team_id_test.csv')
-    new_df.to_sql('team_id_test', engine, if_exists='replace', index=False)
+    new_df.to_csv('team_id_test')
 
-def matching_team(query_key, query_df,type):
+    if to_db == "yes":
+        new_df.to_sql('team_id_test', engine, if_exists='replace', index=False)
+    else:
+        print('No data sent to db')
+
+
+def matching_team(query_key, query_df,type,to_db= 'no'):
 
     """
     sql: ADD THE NEEDED QUERY AND CALL IT TO query_df
@@ -218,7 +230,11 @@ def matching_team(query_key, query_df,type):
     # print("Unique team names in key:", key['Team'].unique())
 
     new_df.to_csv('team_name_test.csv')
-    new_df.to_sql('team_name_test', engine, if_exists='replace', index=False)
+
+    if to_db == "yes":
+        new_df.to_sql('team_name_test', engine, if_exists='replace', index=False)
+    else:
+        print('No data sent to db')
 
 def generating_new_id(query,id_length):
     df = pd.read_sql(f'query',engine)
@@ -241,5 +257,6 @@ def generating_new_id(query,id_length):
 
 
 if __name__ == "__main__":
-    matching_team_id("TEAM_KEY","retooled_sql","csv")
+    matching_team_id("ROY_KEY","TEMP","csv")
     # matching_team("TEAM_KEY","TEMP")
+    # matching_player_id("ALL_PLAYER_KEY","roy.csv","csv")

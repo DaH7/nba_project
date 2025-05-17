@@ -48,9 +48,19 @@ QUERIES = {
         select "Player","season","player_id" from final.key_smoy_2025
         """,
 
+    "KEY_MVP":
+        """
+        select "Player","season","player_id" from final.mvp_2024
+        """,
+
+    "KEY_ROY":
+        """
+        select "Player","season","player_id" from final.roy_2025
+        """,
+
     "TEMP":
         """
-        SELECT * from temp_table
+        SELECT * from staging.LogR_allstar_data
         """,
 }
 engine = create_engine(
@@ -58,36 +68,39 @@ engine = create_engine(
 )
 
 
-def removing_rows(root_dir):
-    for file in os.listdir(root_dir):
-        if file.endswith('.csv'):
-            file_path = os.path.join(root_dir, file) #creates path
+def removing_rows(file_path):
+    #for a folder full of csv
+    # for file in os.listdir(root_dir):
+    #     if file.endswith('.csv'):
+    #         file_path = os.path.join(root_dir, file) #creates path
 
-            # df = pd.read_csv(file_path)
             df = pd.read_csv(file_path, header= 1)  ##skips 1st row and uses 2nd as header
             # df = df.iloc[0:]  # drop 1st row
             # df = df.iloc[:-1]  #drops last row
 
             df.to_csv(file_path, index=False)  #back to csv
-            print(f'{file} saved')
+            print(f'{file_path} saved')
 
 def remove_col(csv_file):
     df = pd.read_csv(csv_file)
     #remove last col
-    df = df.iloc[:,:-1]
+    # df = df.iloc[:,:-1]
+    #remove first column
+    df = df.iloc[:,1:]
     df.to_csv(csv_file, index=False)
     print(f'{csv_file} saved')
 
-def awards_season_retool(root_dir):
-    for file in os.listdir(root_dir):
-        if file.endswith('.csv'):
-            file_path = os.path.join(root_dir, file) #creates path
+def awards_season_retool(file_path):
+    # for group retooling in folder
+    # for file in os.listdir(root_dir):
+    #     if file.endswith('.csv'):
+    #         file_path = os.path.join(root_dir, file) #creates path
 
             df = pd.read_csv(file_path)
             df['Season'] = df['Season'].astype(str).apply(lambda x: x[:2] + x[5:])
             df.iloc[:, 0] = df.iloc[:, 0].str.lower()
             df.to_csv(file_path, index=False)
-            print(f'{file} saved')
+            print(f'{file_path} saved')
 
 def team_retool(query,type):
     '''
@@ -364,6 +377,9 @@ def seperating_team_records(query,csv_name):
     df.to_csv(f'{csv_name}.csv', index=False)
 
 def award_check(key,query,award_name,type):
+    """
+    checks if the award was won in their career
+    """
     if type == 'sql':
         query = QUERIES.get(query, None)
         df = pd.read_sql(query, engine)
@@ -374,14 +390,6 @@ def award_check(key,query,award_name,type):
 
     query_2 = QUERIES.get(key, None)
     key_df = pd.read_sql(query_2, engine)
-
-    if not query:
-        raise ValueError(f"Query/csv '{query}' not found or is None")
-
-    query_2_str = QUERIES.get(key)
-    if not query_2_str:
-        raise ValueError(f"Query key '{key}' not found or is None")
-
 
     #rename columns in key
     key_df = key_df.rename(columns={
@@ -419,16 +427,61 @@ def drop_dupes(csv_file):
     print(f"Duplicates dropped: {before - after}")
 
 
+def award_season_checks(key,query,award_name,type):
+    """
+    checks if they won a certain award this season
+
+    """
+    if type == 'sql':
+        query = QUERIES.get(query, None)
+        df = pd.read_sql(query, engine)
+    elif type == 'csv':
+        df = pd.read_csv(query)
+    else:
+        raise ValueError('sql or csv only')
+
+    query_2 = QUERIES.get(key, None)
+    key_df = pd.read_sql(query_2, engine)
+
+    # rename columns in key
+    key_df = key_df.rename(columns={
+        'season': 'award_season',
+        'player_id': 'key_player_id'
+    })
+    key_df = key_df.drop_duplicates(subset=['Player', 'award_season', 'key_player_id'])
+
+    #clean and merge the two df
+    df.columns = df.columns.str.strip()
+    key_df.columns = key_df.columns.str.strip()
+    df = df.drop_duplicates()
+    df = df.merge(key_df, on= 'Player', how = 'left')
+
+    #check if player won the award
+    df[f'this_season_{award_name}'] = ((df['season'] == df['award_season'])
+                               & (df['player_id'] == df['key_player_id']))
+
+    #for each player + season, keep only 1 row, if the row is true, keep it and delete false , otherwise keep false
+    df.sort_values(by=f'this_season_{award_name}', ascending=False, inplace=True)  #sort to make true comes first
+    df = df.drop_duplicates(subset=['Player', 'season'], keep='first')
+
+#clean data
+    df.drop(columns=['award_season', 'key_player_id'], inplace=True)
+    df.drop_duplicates(inplace=True)
+
+    df.to_csv(f'test',index=False)
+    print("test created")
+
+
 
 if __name__ == "__main__":
-    # removing_rows('expanded_standings')
-    # awards_season_retool('awards')
+    # removing_rows('roy.csv')
+    # awards_season_retool('roy.csv')
     # team_retool( "expanded_standings",'sql')
-    # remove_col('retooled_sql')
+    # remove_col('team_id_test')
     # franchise_grouping('retooled_og_team.csv')
     # db_to_csv('SEASON_TEAM_TOTAL')
     # seperating_team_records('expanded_standings','expanded_standings')
-    # award_check('KEY_MIP','award_adjusted_df','MIP','csv')
+    # award_check("KEY_ROY",'TEMP','ROY','sql')
     # drop_dupes('award_adjusted_df')
-
+    award_season_checks("KEY_ALLSTAR","TEMP",'ALLSTAR','sql')
 

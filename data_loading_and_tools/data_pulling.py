@@ -275,11 +275,13 @@ def awards(award_type):
     smoy: SIXTH MAN OF THE YEAR
     mip: MOST IMPROVED PLAYER
     all_league: ALL NBA TEAMS
+    roy: ROOKIE OF THE YEAR
     """
     url = f'https://www.basketball-reference.com/awards/{award_type}.html'
 
     table_id_dict = {
         'mvp': 'mvp_NBA',
+        'roy': 'roy_NBA',
         'dpoy': 'dpoy_NBA',
         'smoy': 'smoy_NBA',
         'mip': 'mip_NBA',
@@ -294,7 +296,7 @@ def awards(award_type):
 
         if table_html:
             df = pd.read_html(StringIO(str(table_html)))[0]
-            filename = f'{award_type}.csv'
+            filename = f'{award_type}'
             df.to_csv(filename, index=False)
             print(f"Successfully saved {filename}")
         else:
@@ -315,5 +317,5 @@ if __name__ == "__main__":
     # standings(2024,2024, 'west')
     # all_star_roster(1998,2000)
     # draft_class(1947,1949)
-    # awards('mvp')
+    # awards('roy')
 
