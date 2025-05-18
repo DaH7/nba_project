@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="added percentile calculations">
-      <change afterPath="$PROJECT_DIR$/analysis/regression_analysis_all-star-model.py" afterDir="false" />
+    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="updates to scripts">
+      <change afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/regression_analysis.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_loading_and_tools/data_pulling.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/data_pulling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_loading_and_tools/data_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/data_tools.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_loading_and_tools/id_related functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/id_related functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_loading_and_tools/loading_to_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loading_and_tools/loading_to_db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nba_dash_app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/regression_analysis_all-star-model.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/regression_analysis_all-star-model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testing_scripts.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing_scripts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -56,48 +51,50 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python tests.Python tests in analysis.py.executor": "Run",
-    "Python tests.Python tests in data_pulling.py.executor": "Run",
-    "Python.advance_metrics.executor": "Run",
-    "Python.analysis.executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.data_cleaning.executor": "Run",
-    "Python.data_pulling.executor": "Run",
-    "Python.data_tools.executor": "Run",
-    "Python.exploratory_analysis.executor": "Run",
-    "Python.generating_player_id.executor": "Run",
-    "Python.id_related functions.executor": "Run",
-    "Python.loading_to_db.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.matching_ids_and_teams.executor": "Run",
-    "Python.matching_player_ids.executor": "Run",
-    "Python.regression_analysis.executor": "Run",
-    "Python.regression_analysis_all-star-model.executor": "Run",
-    "Python.scratch_1.executor": "Run",
-    "Python.simple_graphs.executor": "Run",
-    "Python.testing_scripts.executor": "Run",
-    "Python.updating_existing_data.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/dahan/PycharmProjects/Nba_Analysis/nba_dash_app"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Python tests in analysis.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in data_pulling.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.advance_metrics.executor&quot;: &quot;Run&quot;,
+    &quot;Python.analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.config.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_cleaning.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_pulling.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_tools.executor&quot;: &quot;Run&quot;,
+    &quot;Python.exploratory_analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.exploratory_analysis_counting-stats.executor&quot;: &quot;Run&quot;,
+    &quot;Python.generating_player_id.executor&quot;: &quot;Run&quot;,
+    &quot;Python.id_related functions.executor&quot;: &quot;Run&quot;,
+    &quot;Python.loading_to_db.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.matching_ids_and_teams.executor&quot;: &quot;Run&quot;,
+    &quot;Python.matching_player_ids.executor&quot;: &quot;Run&quot;,
+    &quot;Python.regression_analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.regression_analysis_all-star-model.executor&quot;: &quot;Run&quot;,
+    &quot;Python.scratch_1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.simple_graphs.executor&quot;: &quot;Run&quot;,
+    &quot;Python.testing_scripts.executor&quot;: &quot;Run&quot;,
+    &quot;Python.updating_existing_data.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/dahan/PycharmProjects/Nba_Analysis/nba_dash_app&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Python",
-      "CSS"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;,
+      &quot;CSS&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\nba_dash_app" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis" />
       <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\data_loading_and_tools" />
       <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\data_loading_and_tools\expanded_standings" />
-      <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis" />
       <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\analysis" />
       <recent name="C:\Users\dahan\PycharmProjects\Nba_Analysis\all_code" />
     </key>
@@ -318,7 +315,31 @@
       <option name="project" value="LOCAL" />
       <updated>1747367509234</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="starting logistic regression by looking at variables">
+      <option name="closed" value="true" />
+      <created>1747443914661</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1747443914661</updated>
+    </task>
+    <task id="LOCAL-00027" summary="updates to scripts">
+      <option name="closed" value="true" />
+      <created>1747443944603</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1747443944603</updated>
+    </task>
+    <task id="LOCAL-00028" summary="updates to scripts">
+      <option name="closed" value="true" />
+      <created>1747512580501</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1747512580501</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -338,6 +359,8 @@
     <MESSAGE value="cleaned up and combined id related functions" />
     <MESSAGE value="added some more general data cleaning tools and functions" />
     <MESSAGE value="added percentile calculations" />
-    <option name="LAST_COMMIT_MESSAGE" value="added percentile calculations" />
+    <MESSAGE value="starting logistic regression by looking at variables" />
+    <MESSAGE value="updates to scripts" />
+    <option name="LAST_COMMIT_MESSAGE" value="updates to scripts" />
   </component>
 </project>
