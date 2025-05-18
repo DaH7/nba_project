@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="updates to scripts">
+    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="update">
       <change afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/regression_analysis_all-star-model.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/regression_analysis_all-star-model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing_scripts.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing_scripts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -339,7 +336,39 @@
       <option name="project" value="LOCAL" />
       <updated>1747512580501</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="decided which variables to use to decide an all star">
+      <option name="closed" value="true" />
+      <created>1747590931258</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1747590931258</updated>
+    </task>
+    <task id="LOCAL-00030" summary="decided which variables to use to decide an all star">
+      <option name="closed" value="true" />
+      <created>1747590959305</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1747590959305</updated>
+    </task>
+    <task id="LOCAL-00031" summary="decided which variables to use to decide an all star">
+      <option name="closed" value="true" />
+      <created>1747590965776</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1747590965776</updated>
+    </task>
+    <task id="LOCAL-00032" summary="update">
+      <option name="closed" value="true" />
+      <created>1747591021477</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1747591021477</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -361,6 +390,8 @@
     <MESSAGE value="added percentile calculations" />
     <MESSAGE value="starting logistic regression by looking at variables" />
     <MESSAGE value="updates to scripts" />
-    <option name="LAST_COMMIT_MESSAGE" value="updates to scripts" />
+    <MESSAGE value="decided which variables to use to decide an all star" />
+    <MESSAGE value="update" />
+    <option name="LAST_COMMIT_MESSAGE" value="update" />
   </component>
 </project>
