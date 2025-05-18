@@ -14,12 +14,11 @@ import dash_bootstrap_components  as dbc
 from dash import dcc,html
 from dash.dependencies import Input,Output
 from sympy import false
+from config import DB_CONFIG
 
-user = 'postgres'
-password= 'abc123'
-host = 'localhost'
-port = 5432
-database = 'nba'
+engine = create_engine(
+    f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
+)
 
 QUERIES = {
     "SEASON_TEAM_TOTAL":
@@ -58,19 +57,27 @@ QUERIES = {
         
         ORDER BY
           1 ASC, 3 Asc
-        """
+        """,
+'MAIN_DATA' :
+    """
+     SELECT * from staging.logr_allstar_data
+    """,
 
 }
 
 
 
 engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}')
-query = QUERIES.get("SEASON_TEAM_TOTAL",None)
+query = QUERIES.get("MAIN_DATA",None)
 df = pd.read_sql(query,engine)
-df.to_csv('SEASON_TEAM_TOTAL.csv',index = false)
+print(df)
+# df.to_csv('SEASON_TEAM_TOTAL.csv',index = false)
 
 # engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}')
 # df = pd.read_csv('season_team_total/team_key.csv')
 # df.to_sql('team_key.csv', con=engine, if_exists='replace', index=False)
 
+# import plotly.express as px
+# fig = px.scatter(x=[1, 2, 3], y=[4, 5, 6])
+# fig.write_image("test.png", engine="orca")
 
