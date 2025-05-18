@@ -1,0 +1,7 @@
+# .gitignore
+
+config.py
+.env
+*.secret
+*.cfg
+*.ini
