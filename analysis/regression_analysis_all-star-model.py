@@ -13,18 +13,19 @@ engine = create_engine(
 QUERIES ={
 'MAIN_DATA' :
     """
-     SELECT * from staging.LogR_allstar_data
+     SELECT * from staging.logr_allstar_data
     """,
 
     'TEST_DATA':
     """
-    SELECT * from staging.LogR_allstar_data
+    SELECT * from staging.logr_allstar_data
     where season != 2025
     """
 
 
 
 }
+
 
 query = QUERIES.get('MAIN_DATA', None)
 df = pd.read_sql(query, engine)
@@ -33,7 +34,7 @@ df = pd.read_sql(query, engine)
 #find which variables are most impactful in producing all stars
 
 
-X = df[['PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+X = df[['pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
     ,'won MVP','won DPOY','won MIP']].copy()
 y = df['this_season_ALLSTAR'].astype(int)
 
