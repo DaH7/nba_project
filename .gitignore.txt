@@ -5,3 +5,4 @@ config.py
 *.secret
 *.cfg
 *.ini
+workspace.xml
