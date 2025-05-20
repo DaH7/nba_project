@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="update">
-      <change afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+    <list default="true" id="f22d7f5d-fa3d-4fa2-9ad7-0affd0e77c22" name="Changes" comment="ignore files with important details">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/exploratory_analysis_counting-stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/exploratory_analysis_counting-stats.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,6 +80,7 @@
   },
   &quot;keyToStringList&quot;: {
     &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;TEXT&quot;,
       &quot;Python&quot;,
       &quot;CSS&quot;
     ]
@@ -368,7 +370,23 @@
       <option name="project" value="LOCAL" />
       <updated>1747591021477</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="ignore files with important details">
+      <option name="closed" value="true" />
+      <created>1747591161735</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1747591161735</updated>
+    </task>
+    <task id="LOCAL-00034" summary="ignore files with important details">
+      <option name="closed" value="true" />
+      <created>1747591166279</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1747591166279</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -392,6 +410,7 @@
     <MESSAGE value="updates to scripts" />
     <MESSAGE value="decided which variables to use to decide an all star" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="ignore files with important details" />
+    <option name="LAST_COMMIT_MESSAGE" value="ignore files with important details" />
   </component>
 </project>

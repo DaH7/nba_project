@@ -29,13 +29,30 @@ def season_avg_query(stat):
     BLK: block per game
     TOV: turnover per game
     """
-    return f"""
-    select avg("{stat}") as "Average {stat}",season, count("Player") as "Player Count"
-    from final.season_avg_2025
-    where "G" >= 18 and "MP" >= 10 
-    group by season
-    order by season
-"""
+    if (f'{stat}') == 'STL' or "BLK":
+        return f"""
+        select avg("{stat}") as "Average {stat}",season, count("Player") as "Player Count"
+        from final.season_avg_2025
+        where "G" >= 18 and "MP" >= 10 and "season" >= 1974
+        group by season
+        order by season
+        """
+    elif (f'{stat}') == 'TOV':
+        return f"""
+        select avg("{stat}") as "Average {stat}",season, count("Player") as "Player Count"
+        from final.season_avg_2025
+        where "G" >= 18 and "MP" >= 10 and "season" >= 1978
+        group by season
+        order by season
+        """
+    else:
+        return f"""
+        select avg("{stat}") as "Average {stat}",season, count("Player") as "Player Count"
+        from final.season_avg_2025
+        where "G" >= 18 and "MP" >= 10 
+        group by season
+        order by season
+        """
 
 def top_stat_query (stat):
     """
@@ -49,15 +66,37 @@ def top_stat_query (stat):
     BLK: block per game
     TOV: turnover per game
     """
-    return f"""
-    select "Player","Team","{stat}","season",player_id,team_id
-        from (
-        select *,row_number() over (partition by "season" order by "{stat}" desc) as row_nums
-        from final.season_avg_2025
-        where "G" >= 18 and "MP" >= 10 
-        ) sub
-    where row_nums = 1
-"""
+    if (f'{stat}') == 'STL' or "BLK":
+        return f"""
+            select "Player","Team","{stat}","season",player_id,team_id,"Pos"
+                from (
+                select *,row_number() over (partition by "season" order by "{stat}" desc) as row_nums
+                from final.season_avg_2025
+                where "G" >= 18 and "MP" >= 10 and "season" >= 1974
+                ) sub
+            where row_nums = 1
+        """
+    elif (f'{stat}') == 'TOV':
+        return f"""
+            select "Player","Team","{stat}","season",player_id,team_id,"Pos"
+                from (
+                select *,row_number() over (partition by "season" order by "{stat}" desc) as row_nums
+                from final.season_avg_2025
+                where "G" >= 18 and "MP" >= 10 and "season" >= 1978
+                ) sub
+            where row_nums = 1
+        """
+
+    else:
+        return f"""
+        select "Player","Team","{stat}","season",player_id,team_id
+            from (
+            select *,row_number() over (partition by "season" order by "{stat}" desc) as row_nums
+            from final.season_avg_2025
+            where "G" >= 18 and "MP" >= 10 
+            ) sub
+        where row_nums = 1
+    """
 
 def stat_leaders(stat,download):
     """
@@ -99,7 +138,7 @@ def stat_leaders(stat,download):
         },
         title = f'{stat} Leaders per Season',
         labels= {f'{stat}': f'{stat} Per Game'},
-        hover_data = {'Player':True,'Team':True,'season': True, f'{stat}': ':.1f'}
+        hover_data = {'Player':True,'Team':True,'season': True,'Pos':True, f'{stat}': ':.1f'}
     )
     if download == 'static':
         fig.write_image(f'{stat} Leaders per Season.png',engine="orca")
@@ -194,5 +233,5 @@ def season_avg(stat,download):
 
 
 if __name__ == '__main__':
-    # stat_leaders('PTS','static')
-    # season_avg("PTS",'static')
+    stat_leaders('TOV','none')
+    # season_avg("BLK",'static')
