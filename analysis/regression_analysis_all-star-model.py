@@ -84,7 +84,7 @@ def regression_var_test(query_input):
 #LR model training
 query = QUERIES.get("TEST_DATA", None)
 df = pd.read_sql(query, engine)
-print(df.columns)
+# print(df.columns)
 X = df[['won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
         ,'won MVP','won DPOY','won MIP']].copy()
 y = df['this_season_ALLSTAR'].astype(int)
@@ -174,13 +174,14 @@ for t in thresholds:
 # plt.show()
 
 #calibration
+# Isotonic Regression
 calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
-calibrated_model.fit(X_train, y_train)  # Use a validation set here
+calibrated_model.fit(X_train, y_train)
 
 # get predicted probabilities (positive class)
 y_proba = calibrated_model.predict_proba(X_test)[:, 1]
 
-#compute calibration curve
+# compute calibration curve
 prob_true, prob_pred = calibration_curve(y_test,y_proba, n_bins = 10)
 
 plt.plot(prob_pred, prob_true, marker='o', label='Calibration curve')
@@ -191,3 +192,23 @@ plt.title('Calibration Curve')
 plt.legend()
 plt.show()
 
+# Apply custom threshold (0.35) to get class predictions
+threshold = 0.35
+y_pred_custom = (y_proba >= threshold).astype(int)
+
+#checking confusion matrix and classifcation report for calibrated model
+print(confusion_matrix(y_test, y_pred_custom))
+print(classification_report(y_test, y_pred_custom))
+print("ROC AUC Score:", roc_auc_score(y_test, y_proba))
+
+
+#threshold turning for calibrated model
+# y_proba = calibrated_model.predict_proba(X_test)[:, 1]
+# thresholds = [0.5, 0.45, 0.4, 0.35, 0.3, 0.25, 0.2, 0.1,0.05]
+# for t in thresholds:
+#     y_pred = (y_proba >= t).astype(int)
+#     f1 = f1_score(y_test, y_pred)
+#     precision = precision_score(y_test, y_pred)
+#     recall = recall_score(y_test, y_pred)
+#     cm = confusion_matrix(y_test, y_pred)
+#     print(f"Threshold: {t:.2f}, Recall: {recall:.3f}, Precision: {precision:.3f}, F1: {f1:.3f}, FN: {cm[1, 0]}, FP: {cm[0, 1]}")
