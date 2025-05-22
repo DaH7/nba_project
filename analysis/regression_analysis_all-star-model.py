@@ -76,6 +76,8 @@ def regression_var_test(query_input):
     vif_df['VIF'] = [variance_inflation_factor(X.values,i) for i in range(X.shape[1])]
     print(vif_df)
 
+
+
 query = QUERIES.get("TEST_DATA", None)
 df = pd.read_sql(query, engine)
 X = df[['pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
