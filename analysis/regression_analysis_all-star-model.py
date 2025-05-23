@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from holoviews.plotting.bokeh.styles import font_size
 from sqlalchemy import create_engine
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from config import DB_CONFIG
@@ -9,6 +10,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score,f1_score,precision_score, recall_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.calibration import calibration_curve,CalibratedClassifierCV
+from sklearn.model_selection import StratifiedKFold
+import seaborn as sns
+
 
 
 engine = create_engine(
@@ -184,22 +188,22 @@ y_proba = calibrated_model.predict_proba(X_test)[:, 1]
 # compute calibration curve
 prob_true, prob_pred = calibration_curve(y_test,y_proba, n_bins = 10)
 
-plt.plot(prob_pred, prob_true, marker='o', label='Calibration curve')
-plt.plot([0, 1], [0, 1], linestyle='--', label='Perfectly calibrated')
-plt.xlabel('Mean predicted probability')
-plt.ylabel('Fraction of positives')
-plt.title('Calibration Curve')
-plt.legend()
-plt.show()
+# plt.plot(prob_pred, prob_true, marker='o', label='Calibration curve')
+# plt.plot([0, 1], [0, 1], linestyle='--', label='Perfectly calibrated')
+# plt.xlabel('Mean predicted probability')
+# plt.ylabel('Fraction of positives')
+# plt.title('Calibration Curve')
+# plt.legend()
+# plt.show()
 
 # Apply custom threshold (0.35) to get class predictions
 threshold = 0.35
 y_pred_custom = (y_proba >= threshold).astype(int)
 
 #checking confusion matrix and classifcation report for calibrated model
-print(confusion_matrix(y_test, y_pred_custom))
-print(classification_report(y_test, y_pred_custom))
-print("ROC AUC Score:", roc_auc_score(y_test, y_proba))
+# print(confusion_matrix(y_test, y_pred_custom))
+# print(classification_report(y_test, y_pred_custom))
+# print("ROC AUC Score:", roc_auc_score(y_test, y_proba))
 
 
 #threshold turning for calibrated model
@@ -212,3 +216,74 @@ print("ROC AUC Score:", roc_auc_score(y_test, y_proba))
 #     recall = recall_score(y_test, y_pred)
 #     cm = confusion_matrix(y_test, y_pred)
 #     print(f"Threshold: {t:.2f}, Recall: {recall:.3f}, Precision: {precision:.3f}, F1: {f1:.3f}, FN: {cm[1, 0]}, FP: {cm[0, 1]}")
+
+#Cross Validation
+skf = StratifiedKFold(n_splits = 5, shuffle = True, random_state = 42)
+threshold = 0.35
+
+f1_scores, precisions, recalls, aucs = [], [], [], []
+
+for train_idx, val_idx in skf.split(X, y):
+    X_train, X_val = X.iloc[train_idx], X.iloc[val_idx]
+    y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
+
+    all_star_model = LogisticRegression(penalty = 'l2', solver='liblinear',class_weight='balanced')
+    all_star_model.fit(X_train, y_train)
+
+    calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
+    calibrated_model.fit(X_train, y_train)
+
+    y_proba = calibrated_model.predict_proba(X_val)[:, 1]
+    y_pred = (y_proba >= threshold).astype(int)
+
+    f1_scores.append(f1_score(y_val, y_pred))
+    precisions.append(precision_score(y_val, y_pred))
+    recalls.append(recall_score(y_val, y_pred))
+    aucs.append(roc_auc_score(y_val, y_proba))
+
+# print(f"Avg F1: {np.mean(f1_scores):.3f} ± {np.std(f1_scores):.3f}")
+# print(f"Avg Precision: {np.mean(precisions):.3f} ± {np.std(precisions):.3f}")
+# print(f"Avg Recall: {np.mean(recalls):.3f} ± {np.std(recalls):.3f}")
+# print(f"Avg ROC AUC: {np.mean(aucs):.3f} ± {np.std(aucs):.3f}")
+
+#error analysis
+false_positives = X_val[(y_pred == 1) & (y_val == 0)].copy()
+false_positives["actual"] = y_val[(y_pred == 1) & (y_val == 0)]
+
+false_negatives = X_val[(y_pred == 0) & (y_val == 1)].copy()
+false_negatives["actual"] = y_val[(y_pred == 0) & (y_val == 1)]
+
+# print("False Positives:\n", false_positives)
+# print("False Negatives:\n", false_negatives)
+
+#graphing to see the results of the FN and FP
+# selected_cols = ['won ALLSTAR', 'won MVP', 'won DPOY', 'won MIP']
+selected_cols = [   'PTS percentile group_<50th percentile',
+                    'PTS percentile group_60th percentile',
+                    'PTS percentile group_70th percentile',
+                    'PTS percentile group_80th percentile',
+                    'PTS percentile group_90th percentile',
+                    'PTS percentile group_95th percentile',
+                    'PTS percentile group_99th percentile',
+                    ]
+
+counts = false_negatives[selected_cols].sum()
+
+plt.figure(figsize=(20,10))
+bars = counts.plot(kind='bar')
+plt.title('Counts of False Positives by Selected Categories')
+plt.ylabel('Count')
+plt.xticks(rotation=10)
+
+# Add count labels on top of each bar
+for bar in bars.patches:
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width() / 2, height ,
+             int(height), ha='center', va='bottom', fontsize = 8)
+
+plt.show()
+
+# false_positives.to_csv("false_positives", index=False)
+# false_negatives.to_csv("false_negatives", index=False)
+#
+# print("False positives and false negatives saved to CSV.")
