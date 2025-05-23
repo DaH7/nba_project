@@ -45,7 +45,7 @@ def regression_var_test(query_input):
     # print(df.columns)
 
     #find which variables are most impactful in producing all stars
-    X = df[['won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+    X = df[['Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
         ,'won MVP','won DPOY','won MIP']].copy()
     y = df['this_season_ALLSTAR'].astype(int)
 
@@ -83,7 +83,10 @@ def regression_var_test(query_input):
     vif_df['VIF'] = [variance_inflation_factor(X.values,i) for i in range(X.shape[1])]
     print(vif_df)
 
-# regression_var_test('MAIN_DATA')
+regression_var_test('MAIN_DATA')
+query1 = QUERIES.get("TEST_DATA", None)
+df1 = pd.read_sql(query1, engine)
+# print(df1.columns)
 
 #LR model training
 query = QUERIES.get("TEST_DATA", None)
@@ -257,21 +260,21 @@ false_negatives["actual"] = y_val[(y_pred == 0) & (y_val == 1)]
 # print("False Negatives:\n", false_negatives)
 
 #graphing to see the results of the FN and FP
-# selected_cols = ['won ALLSTAR', 'won MVP', 'won DPOY', 'won MIP']
-selected_cols = [   'PTS percentile group_<50th percentile',
-                    'PTS percentile group_60th percentile',
-                    'PTS percentile group_70th percentile',
-                    'PTS percentile group_80th percentile',
-                    'PTS percentile group_90th percentile',
-                    'PTS percentile group_95th percentile',
-                    'PTS percentile group_99th percentile',
-                    ]
+selected_cols = ['won ALLSTAR', 'won MVP', 'won DPOY', 'won MIP']
+# selected_cols = [   'TOV percentile group_<50th percentile',
+#                     'TOV percentile group_60th percentile',
+#                     'TOV percentile group_70th percentile',
+#                     'TOV percentile group_80th percentile',
+#                     'TOV percentile group_90th percentile',
+#                     'TOV percentile group_95th percentile',
+#                     'TOV percentile group_99th percentile',
+#                     ]
 
 counts = false_negatives[selected_cols].sum()
 
 plt.figure(figsize=(20,10))
 bars = counts.plot(kind='bar')
-plt.title('Counts of False Positives by Selected Categories')
+plt.title('Counts of False Neg by Selected Categories')
 plt.ylabel('Count')
 plt.xticks(rotation=10)
 
@@ -281,9 +284,20 @@ for bar in bars.patches:
     plt.text(bar.get_x() + bar.get_width() / 2, height ,
              int(height), ha='center', va='bottom', fontsize = 8)
 
-plt.show()
+# plt.show()
 
 # false_positives.to_csv("false_positives", index=False)
 # false_negatives.to_csv("false_negatives", index=False)
 #
 # print("False positives and false negatives saved to CSV.")
+
+# After getting predictions (y_pred, y_proba)
+# results_df = X_test.copy()
+# results_df['y_true'] = y_test
+# results_df['y_pred'] = y_pred
+# results_df['y_proba'] = y_proba
+#
+# # Merge names for human-readable output
+# results_df = pd.merge(results_df, df1[['Player', 'season']],
+#                       left_index=True, right_index=True, how='left')
+# results_df.to_csv("results_df", index = False)
