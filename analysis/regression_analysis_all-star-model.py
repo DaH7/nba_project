@@ -12,6 +12,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.calibration import calibration_curve,CalibratedClassifierCV
 from sklearn.model_selection import StratifiedKFold
 import seaborn as sns
+import numpy as np
 
 
 
@@ -25,15 +26,17 @@ QUERIES ={
      SELECT * from staging.logr_allstar_data
     """,
 
-    'TEST_DATA':
+    'TRAINING_DATA':
     """
     SELECT * from staging.logr_allstar_data
-    where season != 2025
+    where season < 2023 
+    and season > 1950
     """,
+
     'PRED_DATA':
         """
         SELECT * from staging.logr_allstar_data
-        where season == 2025
+        where season = 2025
         """,
 
 
@@ -45,7 +48,7 @@ def regression_var_test(query_input):
     # print(df.columns)
 
     #find which variables are most impactful in producing all stars
-    X = df[['Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+    X = df[['GS','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
         ,'won MVP','won DPOY','won MIP']].copy()
     y = df['this_season_ALLSTAR'].astype(int)
 
@@ -83,221 +86,258 @@ def regression_var_test(query_input):
     vif_df['VIF'] = [variance_inflation_factor(X.values,i) for i in range(X.shape[1])]
     print(vif_df)
 
-regression_var_test('MAIN_DATA')
-query1 = QUERIES.get("TEST_DATA", None)
-df1 = pd.read_sql(query1, engine)
-# print(df1.columns)
-
-#LR model training
-query = QUERIES.get("TEST_DATA", None)
-df = pd.read_sql(query, engine)
-# print(df.columns)
-X = df[['won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
-        ,'won MVP','won DPOY','won MIP']].copy()
-y = df['this_season_ALLSTAR'].astype(int)
-# convert bool to int for initial bool columns
-bool_cols = X.select_dtypes(include='bool').columns
-X[bool_cols] = X[bool_cols].astype(int) #true and false to 1 and 0
-#creates dummy variables (bool) for each cat (object). the dummy variable indicate if this cat is true or false
-cat_cols = X.select_dtypes(include='object').columns
-X = pd.get_dummies(X, columns=cat_cols, drop_first=True)
-# Convert bool dummies to int
-bool_cols = X.select_dtypes(include='bool').columns
-X[bool_cols] = X[bool_cols].astype(int)
-#drops any na rows
-X = X.dropna()
-#realiggns X with y
-y = y.loc[X.index]
-X = sm.add_constant(X)
-
-#spliting the train and test sets
-X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = 0.2, random_state = 42)
-all_star_model = LogisticRegression(penalty = 'l2', solver='liblinear',class_weight='balanced')
+# regression_var_test('MAIN_DATA')
 
 
-all_star_model.fit(X_train, y_train)
-y_pred = all_star_model.predict(X_test)
-# print(confusion_matrix(y_test, y_pred))
-# print(classification_report(y_test, y_pred))
-# print("ROC AUC Score:", roc_auc_score(y_test, all_star_model.predict_proba(X_test)[:, 1]))
+def all_star_model_analysis(query):
+    #LR model training
+    query = QUERIES.get(query, None)
+    df = pd.read_sql(query, engine)
+    # print(df.columns)
+    X = df[['GS','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+            ,'won MVP','won DPOY','won MIP']].copy()
+    y = df['this_season_ALLSTAR'].astype(int)
+    # convert bool to int for initial bool columns
+    bool_cols = X.select_dtypes(include='bool').columns
+    X[bool_cols] = X[bool_cols].astype(int) #true and false to 1 and 0
+    #creates dummy variables (bool) for each cat (object). the dummy variable indicate if this cat is true or false
+    cat_cols = X.select_dtypes(include='object').columns
+    X = pd.get_dummies(X, columns=cat_cols, drop_first=True)
+    # Convert bool dummies to int
+    bool_cols = X.select_dtypes(include='bool').columns
+    X[bool_cols] = X[bool_cols].astype(int)
+    #drops any na rows
+    X = X.dropna()
+    #realiggns X with y
+    y = y.loc[X.index]
+    X = sm.add_constant(X)
 
-#C - regularization  strength
-param_grid = {'C': [0.001, 0.01, 0.1, 1, 10, 100]}
-grid = GridSearchCV(LogisticRegression(penalty='l2', solver='liblinear', class_weight='balanced'),
-                    param_grid,
-                    scoring='f1',
-                    cv=5)
-grid.fit(X_train, y_train)
-# print("Best C:", grid.best_params_['C'])
-
-#Threshold Tuning
-# get predicted probabilities (positive class)
-y_proba = all_star_model.predict_proba(X_test)[:, 1]
-thresholds = [0.5, 0.45, 0.4, 0.35, 0.3, 0.25, 0.2, 0.1]
-# f1_scores = []
-# precisions = []
-# recalls = []
-# false_negatives = []
-# false_positives = []
-
-for t in thresholds:
-    y_pred = (y_proba >= t).astype(int)
-    f1 = f1_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    cm = confusion_matrix(y_test, y_pred)
-    # print(f"Threshold: {t:.2f}, Recall: {recall:.3f}, Precision: {precision:.3f}, F1: {f1:.3f}, FN: {cm[1, 0]}, FP: {cm[0, 1]}")
-
-### this graphs all the metrics to compare if dropping the threshold is worth the trade off of worse metrics
-# for t in thresholds:
-#     y_pred = (y_proba >= t).astype(int)
-#     f1_scores.append(f1_score(y_test, y_pred))
-#     precisions.append(precision_score(y_test, y_pred))
-#     recalls.append(recall_score(y_test, y_pred))
-#     cm = confusion_matrix(y_test, y_pred)
-#     false_negatives.append(cm[1, 0])
-#     false_positives.append(cm[0, 1])
-#
-# fig, ax1 = plt.subplots(figsize=(12, 8))
-#
-# ax1.plot(thresholds, f1_scores, label='F1 Score', marker='o')
-# ax1.plot(thresholds, precisions, label='Precision', marker='o')
-# ax1.plot(thresholds, recalls, label='Recall', marker='o')
-# ax1.plot(thresholds, false_negatives, label='False Negatives', marker='o')
-#
-# ax1.set_xlabel('Threshold')
-# ax1.set_ylabel('Score / Count')
-# ax1.invert_xaxis()
-# ax1.legend(loc='upper left')
-# ax1.grid(True)
-#
-# ax2 = ax1.twinx()  # Create a second y-axis
-# ax2.plot(thresholds, false_positives, label='False Positives', color='red', marker='x')
-# ax2.set_ylabel('False Positives Count', color='red')
-# ax2.tick_params(axis='y', labelcolor='red')
-# ax2.legend(loc='upper right')
-#
-# plt.title('Model Performance Metrics vs Decision Threshold')
-# plt.show()
-
-#calibration
-# Isotonic Regression
-calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
-calibrated_model.fit(X_train, y_train)
-
-# get predicted probabilities (positive class)
-y_proba = calibrated_model.predict_proba(X_test)[:, 1]
-
-# compute calibration curve
-prob_true, prob_pred = calibration_curve(y_test,y_proba, n_bins = 10)
-
-# plt.plot(prob_pred, prob_true, marker='o', label='Calibration curve')
-# plt.plot([0, 1], [0, 1], linestyle='--', label='Perfectly calibrated')
-# plt.xlabel('Mean predicted probability')
-# plt.ylabel('Fraction of positives')
-# plt.title('Calibration Curve')
-# plt.legend()
-# plt.show()
-
-# Apply custom threshold (0.35) to get class predictions
-threshold = 0.35
-y_pred_custom = (y_proba >= threshold).astype(int)
-
-#checking confusion matrix and classifcation report for calibrated model
-# print(confusion_matrix(y_test, y_pred_custom))
-# print(classification_report(y_test, y_pred_custom))
-# print("ROC AUC Score:", roc_auc_score(y_test, y_proba))
-
-
-#threshold turning for calibrated model
-# y_proba = calibrated_model.predict_proba(X_test)[:, 1]
-# thresholds = [0.5, 0.45, 0.4, 0.35, 0.3, 0.25, 0.2, 0.1,0.05]
-# for t in thresholds:
-#     y_pred = (y_proba >= t).astype(int)
-#     f1 = f1_score(y_test, y_pred)
-#     precision = precision_score(y_test, y_pred)
-#     recall = recall_score(y_test, y_pred)
-#     cm = confusion_matrix(y_test, y_pred)
-#     print(f"Threshold: {t:.2f}, Recall: {recall:.3f}, Precision: {precision:.3f}, F1: {f1:.3f}, FN: {cm[1, 0]}, FP: {cm[0, 1]}")
-
-#Cross Validation
-skf = StratifiedKFold(n_splits = 5, shuffle = True, random_state = 42)
-threshold = 0.35
-
-f1_scores, precisions, recalls, aucs = [], [], [], []
-
-for train_idx, val_idx in skf.split(X, y):
-    X_train, X_val = X.iloc[train_idx], X.iloc[val_idx]
-    y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
-
+    #spliting the train and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = 0.2, random_state = 42)
     all_star_model = LogisticRegression(penalty = 'l2', solver='liblinear',class_weight='balanced')
+
+
     all_star_model.fit(X_train, y_train)
+    y_pred = all_star_model.predict(X_test)
+    print(confusion_matrix(y_test, y_pred))
+    print(classification_report(y_test, y_pred))
+    print("ROC AUC Score:", roc_auc_score(y_test, all_star_model.predict_proba(X_test)[:, 1]))
+
+
+    #C - regularization  strength
+    param_grid = {'C': [0.001, 0.01, 0.1, 1, 10, 100]}
+    grid = GridSearchCV(LogisticRegression(penalty='l2', solver='liblinear', class_weight='balanced'),
+                        param_grid,
+                        scoring='f1',
+                        cv=5)
+    grid.fit(X_train, y_train)
+    print("Best C:", grid.best_params_['C'])
+
+    #Threshold Tuning
+    # get predicted probabilities (positive class)
+    y_proba = all_star_model.predict_proba(X_test)[:, 1]
+    thresholds = [0.5, 0.45, 0.4, 0.35, 0.3, 0.25, 0.2, 0.1]
+
+    for t in thresholds:
+        y_pred = (y_proba >= t).astype(int)
+        f1 = f1_score(y_test, y_pred)
+        precision = precision_score(y_test, y_pred)
+        recall = recall_score(y_test, y_pred)
+        cm = confusion_matrix(y_test, y_pred)
+        print(f"Baseline Threshold: {t:.2f}, Recall: {recall:.3f}, Precision: {precision:.3f}, F1: {f1:.3f}, FN: {cm[1, 0]}, FP: {cm[0, 1]}")
 
     calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
     calibrated_model.fit(X_train, y_train)
 
-    y_proba = calibrated_model.predict_proba(X_val)[:, 1]
+    # get predicted probabilities (positive class)
+    y_proba = calibrated_model.predict_proba(X_test)[:, 1]
+
+    # compute calibration curve
+    prob_true, prob_pred = calibration_curve(y_test, y_proba, n_bins=10)
+
+    # Apply custom threshold (0.35) to get class predictions
+    threshold = 0.35
+    y_pred_custom = (y_proba >= threshold).astype(int)
+
+    # checking confusion matrix and classifcation report for calibrated model
+    print(confusion_matrix(y_test, y_pred_custom))
+    print(classification_report(y_test, y_pred_custom))
+    print("ROC AUC Score:", roc_auc_score(y_test, y_proba))
+
+    # threshold turning for calibrated model
+    y_proba = calibrated_model.predict_proba(X_test)[:, 1]
+    thresholds = [0.5, 0.45, 0.4, 0.35, 0.3, 0.25, 0.2, 0.1,0.05]
+    for t in thresholds:
+        y_pred = (y_proba >= t).astype(int)
+        f1 = f1_score(y_test, y_pred)
+        precision = precision_score(y_test, y_pred)
+        recall = recall_score(y_test, y_pred)
+        cm = confusion_matrix(y_test, y_pred)
+        print(f"Calibrated Threshold: {t:.2f}, Recall: {recall:.3f}, Precision: {precision:.3f}, F1: {f1:.3f}, FN: {cm[1, 0]}, FP: {cm[0, 1]}")
+
+    plt.plot(prob_pred, prob_true, marker='o', label='Calibration curve')
+    plt.plot([0, 1], [0, 1], linestyle='--', label='Perfectly calibrated')
+    plt.xlabel('Mean predicted probability')
+    plt.ylabel('Fraction of positives')
+    plt.title('Calibration Curve')
+    plt.legend()
+    plt.show()
+
+    # Cross Validation
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    threshold = 0.35
+
+    f1_scores, precisions, recalls, aucs = [], [], [], []
+
+    for train_idx, val_idx in skf.split(X, y):
+        X_train, X_val = X.iloc[train_idx], X.iloc[val_idx]
+        y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
+
+        all_star_model = LogisticRegression(penalty='l2', solver='liblinear', class_weight='balanced')
+        all_star_model.fit(X_train, y_train)
+
+        calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
+        calibrated_model.fit(X_train, y_train)
+
+        y_proba = calibrated_model.predict_proba(X_val)[:, 1]
+        y_pred = (y_proba >= threshold).astype(int)
+
+        f1_scores.append(f1_score(y_val, y_pred))
+        precisions.append(precision_score(y_val, y_pred))
+        recalls.append(recall_score(y_val, y_pred))
+        aucs.append(roc_auc_score(y_val, y_proba))
+
+    print(f"Avg F1: {np.mean(f1_scores):.3f} ± {np.std(f1_scores):.3f}")
+    print(f"Avg Precision: {np.mean(precisions):.3f} ± {np.std(precisions):.3f}")
+    print(f"Avg Recall: {np.mean(recalls):.3f} ± {np.std(recalls):.3f}")
+    print(f"Avg ROC AUC: {np.mean(aucs):.3f} ± {np.std(aucs):.3f}")
+
+    # error analysis
+    false_positives = X_val[(y_pred == 1) & (y_val == 0)].copy()
+    false_positives["actual"] = y_val[(y_pred == 1) & (y_val == 0)]
+
+    false_negatives = X_val[(y_pred == 0) & (y_val == 1)].copy()
+    false_negatives["actual"] = y_val[(y_pred == 0) & (y_val == 1)]
+    # print("False Positives:\n", false_positives)
+    # print("False Negatives:\n", false_negatives)
+
+    #getting original dataset with all columns
+    query1 = QUERIES.get("TEST_DATA", None)
+    df1 = pd.read_sql(query1, engine)
+    print(df1.columns)
+
+    # after getting predictions (y_pred, y_proba)
+    y_proba = calibrated_model.predict_proba(X_test)[:, 1]
     y_pred = (y_proba >= threshold).astype(int)
+    results_df = X_test.copy()
+    results_df['y_true'] = y_test
+    results_df['y_pred'] = y_pred
+    results_df['y_proba'] = y_proba
 
-    f1_scores.append(f1_score(y_val, y_pred))
-    precisions.append(precision_score(y_val, y_pred))
-    recalls.append(recall_score(y_val, y_pred))
-    aucs.append(roc_auc_score(y_val, y_proba))
 
-# print(f"Avg F1: {np.mean(f1_scores):.3f} ± {np.std(f1_scores):.3f}")
-# print(f"Avg Precision: {np.mean(precisions):.3f} ± {np.std(precisions):.3f}")
-# print(f"Avg Recall: {np.mean(recalls):.3f} ± {np.std(recalls):.3f}")
-# print(f"Avg ROC AUC: {np.mean(aucs):.3f} ± {np.std(aucs):.3f}")
+    # merging back some column names to make it easier to read
+    results_df = pd.merge(results_df, df1[['Age','Player', 'season']],
+                          left_index=True, right_index=True, how='left')
+    results_df.to_csv("results_df", index=False)
 
-#error analysis
-false_positives = X_val[(y_pred == 1) & (y_val == 0)].copy()
-false_positives["actual"] = y_val[(y_pred == 1) & (y_val == 0)]
 
-false_negatives = X_val[(y_pred == 0) & (y_val == 1)].copy()
-false_negatives["actual"] = y_val[(y_pred == 0) & (y_val == 1)]
+# all_star_model_analysis("TEST_DATA")
 
-# print("False Positives:\n", false_positives)
-# print("False Negatives:\n", false_negatives)
 
-#graphing to see the results of the FN and FP
-selected_cols = ['won ALLSTAR', 'won MVP', 'won DPOY', 'won MIP']
-# selected_cols = [   'TOV percentile group_<50th percentile',
-#                     'TOV percentile group_60th percentile',
-#                     'TOV percentile group_70th percentile',
-#                     'TOV percentile group_80th percentile',
-#                     'TOV percentile group_90th percentile',
-#                     'TOV percentile group_95th percentile',
-#                     'TOV percentile group_99th percentile',
-#                     ]
 
-counts = false_negatives[selected_cols].sum()
+def all_star_model(query,C = 100, threshold = 0.35):
+    """
+        Trains and calibrates a logistic regression model to predict NBA All-Star selections.
+        query = TEST_DATA
+        threshold is set to 0.35
+        C is set to 100 (minimal regularization)
+        returns = calibrated model that was found from all_star_model_analysis with test_data
+    """
+    #read testing data
+    query = QUERIES.get(query, None)
+    df = pd.read_sql(query, engine)
 
-plt.figure(figsize=(20,10))
-bars = counts.plot(kind='bar')
-plt.title('Counts of False Neg by Selected Categories')
-plt.ylabel('Count')
-plt.xticks(rotation=10)
+    X = df[['GS', 'won ALLSTAR', 'pre_win_precentage', 'PTS percentile group', 'TRB percentile group',
+            'AST percentile group', 'STL percentile group', 'BLK percentile group', 'TOV percentile group'
+        , 'won MVP', 'won DPOY', 'won MIP']].copy()
+    y = df['this_season_ALLSTAR'].astype(int)
 
-# Add count labels on top of each bar
-for bar in bars.patches:
-    height = bar.get_height()
-    plt.text(bar.get_x() + bar.get_width() / 2, height ,
-             int(height), ha='center', va='bottom', fontsize = 8)
+    # convert bool to int for initial bool columns
+    bool_cols = X.select_dtypes(include='bool').columns
+    X[bool_cols] = X[bool_cols].astype(int)  # true and false to 1 and 0
 
-# plt.show()
+    # hot encodes cat vars (0 and 1)
+    cat_cols = X.select_dtypes(include='object').columns
+    X = pd.get_dummies(X, columns=cat_cols, drop_first=True)
 
-# false_positives.to_csv("false_positives", index=False)
-# false_negatives.to_csv("false_negatives", index=False)
-#
-# print("False positives and false negatives saved to CSV.")
+    # Convert bool to int
+    bool_cols = X.select_dtypes(include='bool').columns
+    X[bool_cols] = X[bool_cols].astype(int)
 
-# After getting predictions (y_pred, y_proba)
-# results_df = X_test.copy()
-# results_df['y_true'] = y_test
-# results_df['y_pred'] = y_pred
-# results_df['y_proba'] = y_proba
-#
-# # Merge names for human-readable output
-# results_df = pd.merge(results_df, df1[['Player', 'season']],
-#                       left_index=True, right_index=True, how='left')
-# results_df.to_csv("results_df", index = False)
+    # drops any na rows
+    X = X.dropna()
+
+    # realigns X with y
+    y = y.loc[X.index]
+    X = sm.add_constant(X)
+
+    # Model training
+    model = LogisticRegression(penalty='l2', solver='liblinear', class_weight='balanced', C=C)
+    model.fit(X, y)
+
+    # Calibration
+    calibrated_model = CalibratedClassifierCV(model, method='isotonic', cv='prefit')
+    calibrated_model.fit(X, y)
+
+    return calibrated_model, X, y, threshold
+
+
+def prediction_data(query):
+    """
+    preparing data for prediction
+    """
+    query = QUERIES.get(query, None)
+    df = pd.read_sql(query, engine)
+    X = df[['GS', 'won ALLSTAR', 'pre_win_precentage', 'PTS percentile group', 'TRB percentile group',
+            'AST percentile group', 'STL percentile group', 'BLK percentile group', 'TOV percentile group'
+        , 'won MVP', 'won DPOY', 'won MIP']].copy()
+    y = df['this_season_ALLSTAR'].astype(int)
+
+    # convert bool to int for initial bool columns
+    bool_cols = X.select_dtypes(include='bool').columns
+    X[bool_cols] = X[bool_cols].astype(int)  # true and false to 1 and 0
+
+    # hot encodes cat vars (0 and 1)
+    cat_cols = X.select_dtypes(include='object').columns
+    X = pd.get_dummies(X, columns=cat_cols, drop_first=True)
+
+    # Convert bool to int
+    bool_cols = X.select_dtypes(include='bool').columns
+    X[bool_cols] = X[bool_cols].astype(int)
+
+    # drops any na rows
+    X = X.dropna()
+
+    # realigns X with y
+    y = y.loc[X.index]
+    X = sm.add_constant(X)
+
+    # Align columns of X_test to X_train to avoid mismatch (important!)
+    X_test = X.reindex(columns=X.columns, fill_value=0)
+
+    calibrated_model, X_train, y_train, threshold = all_star_model("TRAINING_DATA")
+    # Predict probabilities for positive class
+    y_proba_test = calibrated_model.predict_proba(X_test)[:, 1]
+
+    # Apply your threshold to get predicted classes
+    y_pred_test = (y_proba_test >= threshold).astype(int)
+
+    results_df = df.copy()  # keep original test data
+    results_df['y_proba'] = y_proba_test
+    results_df['y_pred'] = y_pred_test
+
+    results_df.to_csv('prediction_results',index=False)
+
+
+
+prediction_data("PRED_DATA")
