@@ -332,5 +332,7 @@ def prediction_data(query):
     results_df['y_pred'] = y_pred_test
 
     results_df.to_csv('prediction_results',index=False)
+    results_df.to_sql('prediction_results', con=engine, if_exists='replace', index=False)
+    print('Results saved to csv and database')
 
 prediction_data("PRED_DATA")
