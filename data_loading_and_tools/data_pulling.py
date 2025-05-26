@@ -317,5 +317,5 @@ if __name__ == "__main__":
     # standings(2024,2024, 'west')
     # all_star_roster(1998,2000)
     # draft_class(1947,1949)
-    # awards('roy')
+    awards('mvp')
 

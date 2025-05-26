@@ -70,4 +70,4 @@ def percentile_group(file,stat,type):
 
 
 if __name__ == '__main__':
-    percentile_group('award_adjusted','MP','csv')
+    percentile_group('ALLSTAR_LR_DATA','MP','sql')
