@@ -36,7 +36,7 @@ QUERIES ={
     'PRED_DATA':
         """
         SELECT * from staging.logr_allstar_data
-        where season = 2025
+        where season = 2024
         """,
 
 
@@ -47,9 +47,12 @@ def regression_var_test(query_input):
     df = pd.read_sql(query, engine)
     # print(df.columns)
 
-    #find which variables are most impactful in producing all stars
-    X = df[['GS','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
-        ,'won MVP','won DPOY','won MIP']].copy()
+    # #find which variables are most impactful in producing all stars
+    # X = df[['GS','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+    #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
+
+    X = df[['GS','3P%','FT%','Pos',"PTS percentile", "AST percentile","TRB percentile","BLK percentile","TOV percentile",
+            'won MVP','won DPOY','pre_win_precentage']].copy() #model 2
     y = df['this_season_ALLSTAR'].astype(int)
 
     # convert bool to int for initial bool columns
@@ -77,7 +80,7 @@ def regression_var_test(query_input):
 
 
     model = sm.Logit(y, X)
-    results = model.fit()
+    results = model.fit(maxiter=100)
     print(results.summary())
 
     #checking VIF ( Variance Inflation Factor)
@@ -93,8 +96,13 @@ def all_star_model_analysis(query):
     query = QUERIES.get(query, None)
     df = pd.read_sql(query, engine)
     # print(df.columns)
-    X = df[['GS','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
-            ,'won MVP','won DPOY','won MIP']].copy()
+    # X = df[['GS','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+    #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
+
+
+    X = df[['GS','Pos','3P%','FT%',"PTS percentile", "AST percentile","TRB percentile","STL percentile","BLK percentile","TOV percentile",
+            'won MVP','won DPOY','pre_win_precentage','won ALLSTAR']].copy() #model 2
+
     y = df['this_season_ALLSTAR'].astype(int)
     # convert bool to int for initial bool columns
     bool_cols = X.select_dtypes(include='bool').columns
@@ -155,7 +163,7 @@ def all_star_model_analysis(query):
     prob_true, prob_pred = calibration_curve(y_test, y_proba, n_bins=10)
 
     # Apply custom threshold (0.35) to get class predictions
-    threshold = 0.35
+    threshold = 0.4
     y_pred_custom = (y_proba >= threshold).astype(int)
 
     # checking confusion matrix and classifcation report for calibrated model
@@ -206,6 +214,7 @@ def all_star_model_analysis(query):
         recalls.append(recall_score(y_val, y_pred))
         aucs.append(roc_auc_score(y_val, y_proba))
 
+    print(f"Selected Calibrated Threshold: {threshold}")
     print(f"Avg F1: {np.mean(f1_scores):.3f} ± {np.std(f1_scores):.3f}")
     print(f"Avg Precision: {np.mean(precisions):.3f} ± {np.std(precisions):.3f}")
     print(f"Avg Recall: {np.mean(recalls):.3f} ± {np.std(recalls):.3f}")
@@ -221,7 +230,7 @@ def all_star_model_analysis(query):
     # print("False Negatives:\n", false_negatives)
 
     #getting original dataset with all columns
-    query1 = QUERIES.get("TEST_DATA", None)
+    query1 = QUERIES.get("TRAINING_DATA", None)
     df1 = pd.read_sql(query1, engine)
     print(df1.columns)
 
@@ -235,10 +244,11 @@ def all_star_model_analysis(query):
 
 
     # merging back some column names to make it easier to read
-    results_df = pd.merge(results_df, df1[['Age','Player', 'season']],
+    results_df = pd.merge(results_df, df1[['Age','Player','season']],
                           left_index=True, right_index=True, how='left')
     results_df.to_csv("results_df", index=False)
-# all_star_model_analysis("TEST_DATA")
+
+# all_star_model_analysis("TRAINING_DATA")
 
 def all_star_model(query,C = 100, threshold = 0.35):
     """
@@ -252,9 +262,13 @@ def all_star_model(query,C = 100, threshold = 0.35):
     query = QUERIES.get(query, None)
     df = pd.read_sql(query, engine)
 
-    X = df[['GS', 'won ALLSTAR', 'pre_win_precentage', 'PTS percentile group', 'TRB percentile group',
-            'AST percentile group', 'STL percentile group', 'BLK percentile group', 'TOV percentile group'
-        , 'won MVP', 'won DPOY', 'won MIP']].copy()
+    # X = df[['GS', 'won ALLSTAR', 'pre_win_precentage', 'PTS percentile group', 'TRB percentile group',
+    #         'AST percentile group', 'STL percentile group', 'BLK percentile group', 'TOV percentile group'
+    #     , 'won MVP', 'won DPOY', 'won MIP']].copy() #model 1
+
+    X = df[['GS','Pos','3P%','FT%',"PTS percentile", "AST percentile","TRB percentile","STL percentile","BLK percentile","TOV percentile",
+            'won MVP','won DPOY','pre_win_precentage','won ALLSTAR']].copy() #model 2
+
     y = df['this_season_ALLSTAR'].astype(int)
 
     # convert bool to int for initial bool columns
@@ -293,9 +307,12 @@ def prediction_data(query):
     """
     query = QUERIES.get(query, None)
     df = pd.read_sql(query, engine)
-    X = df[['GS', 'won ALLSTAR', 'pre_win_precentage', 'PTS percentile group', 'TRB percentile group',
-            'AST percentile group', 'STL percentile group', 'BLK percentile group', 'TOV percentile group'
-        , 'won MVP', 'won DPOY', 'won MIP']].copy()
+    # X = df[['GS', 'won ALLSTAR', 'pre_win_precentage', 'PTS percentile group', 'TRB percentile group',
+    #         'AST percentile group', 'STL percentile group', 'BLK percentile group', 'TOV percentile group'
+    #     , 'won MVP', 'won DPOY', 'won MIP']].copy() #model 1
+
+    X = df[['GS','Pos','3P%','FT%',"PTS percentile", "AST percentile","TRB percentile","STL percentile","BLK percentile","TOV percentile",
+            'won MVP','won DPOY','pre_win_precentage','won ALLSTAR']].copy() #model 2
     y = df['this_season_ALLSTAR'].astype(int)
 
     # convert bool to int for initial bool columns
@@ -311,7 +328,8 @@ def prediction_data(query):
     X[bool_cols] = X[bool_cols].astype(int)
 
     # drops any na rows
-    X = X.dropna()
+    # X = X.dropna()  #for groups
+    X = X.fillna(0)  # for numeric
 
     # realigns X with y
     y = y.loc[X.index]
@@ -319,6 +337,7 @@ def prediction_data(query):
 
     # Align columns of X_test to X_train to avoid mismatch (important!)
     X_test = X.reindex(columns=X.columns, fill_value=0)
+
 
     calibrated_model, X_train, y_train, threshold = all_star_model("TRAINING_DATA")
     # Predict probabilities for positive class
@@ -331,8 +350,9 @@ def prediction_data(query):
     results_df['y_proba'] = y_proba_test
     results_df['y_pred'] = y_pred_test
 
+
     results_df.to_csv('prediction_results',index=False)
     results_df.to_sql('prediction_results', con=engine, if_exists='replace', index=False)
     print('Results saved to csv and database')
 
-prediction_data("PRED_DATA")
+# prediction_data("PRED_DATA")
