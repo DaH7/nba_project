@@ -30,7 +30,7 @@ QUERIES = {
 
     "KEY_DPOY":
         """
-        select "Player","season","player_id" from final.key_dpoy_2025
+        select "Player","season","player_id" from final.dpoy_2025
         """,
 
     "KEY_ALLSTAR":
@@ -40,12 +40,12 @@ QUERIES = {
 
     "KEY_MIP":
         """
-        select "Player","season","player_id" from final.key_mip_2025
+        select "Player","season","player_id" from final.mip_2025
         """,
 
     "KEY_SMOY":
         """
-        select "Player","season","player_id" from final.key_smoy_2025
+        select "Player","season","player_id" from final.smoy_2025
         """,
 
     "KEY_MVP":
@@ -407,7 +407,7 @@ def award_check(key,query,award_name,type):
     df = df.merge(key_df, on= 'Player', how = 'left')
 
     #check if player won the award
-    df[f'won {award_name}'] = ((df['season'] >= df['award_season'])
+    df[f'won {award_name}'] = ((df['season'] > df['award_season'])
                                & df['award_season'].notna()
                                & (df['player_id'] == df['key_player_id']))
 
@@ -415,8 +415,8 @@ def award_check(key,query,award_name,type):
     df.drop(columns=['award_season', 'key_player_id'], inplace=True)
     df.drop_duplicates(inplace=True)
 
-    df.to_csv(f'award_adjusted_df',index=False)
-    print("award_adjusted_df created")
+    df.to_csv(f'test_award_adjusted',index=False)
+    print("test_award_adjusted created")
 
 def drop_dupes(csv_file):
     df = pd.read_csv(csv_file)
@@ -480,7 +480,7 @@ if __name__ == "__main__":
     # franchise_grouping('retooled_og_team.csv')
     # db_to_csv('SEASON_TEAM_TOTAL')
     # seperating_team_records('expanded_standings','expanded_standings')
-    # award_check("KEY_ROY",'TEMP','ROY','sql')
+    # award_check("KEY_MVP",'test_award_adjusted','MVP','csv')
     # drop_dupes('award_adjusted_df')
-    award_season_checks("KEY_ALLSTAR","TEMP",'ALLSTAR','sql')
+    # award_season_checks("KEY_ALLSTAR","TEMP",'ALLSTAR','sql')
 
