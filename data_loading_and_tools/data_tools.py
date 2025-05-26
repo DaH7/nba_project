@@ -376,9 +376,10 @@ def seperating_team_records(query,csv_name):
 
     df.to_csv(f'{csv_name}.csv', index=False)
 
-def award_check(key,query,award_name,type):
+def award_check_and_count(key,query,award_name,type):
     """
     checks if the award was won in their career
+    returns a True or False if that won it and continues being True after the season award is won
     """
     if type == 'sql':
         query = QUERIES.get(query, None)
@@ -415,6 +416,8 @@ def award_check(key,query,award_name,type):
     df.drop(columns=['award_season', 'key_player_id'], inplace=True)
     df.drop_duplicates(inplace=True)
 
+
+
     df.to_csv(f'test_award_adjusted',index=False)
     print("test_award_adjusted created")
 
@@ -426,9 +429,10 @@ def drop_dupes(csv_file):
     df.to_csv(f'award_adjusted_df', index=False)
     print(f"Duplicates dropped: {before - after}")
 
-def award_season_checks(key,query,award_name,type):
+def award_season_checks_and_count(key,query,award_name,type):
     """
     checks if they won a certain award this season
+    returns a True and False for  award won for that season and count of how many times award was received
 
     """
     if type == 'sql':
@@ -453,7 +457,7 @@ def award_season_checks(key,query,award_name,type):
     df.columns = df.columns.str.strip()
     key_df.columns = key_df.columns.str.strip()
     df = df.drop_duplicates()
-    df = df.merge(key_df, on= 'Player', how = 'left')
+    df = df.merge(key_df, on= ['Player'], how = 'left')
 
     #check if player won the award
     df[f'this_season_{award_name}'] = ((df['season'] == df['award_season'])
@@ -463,12 +467,22 @@ def award_season_checks(key,query,award_name,type):
     df.sort_values(by=f'this_season_{award_name}', ascending=False, inplace=True)  #sort to make true comes first
     df = df.drop_duplicates(subset=['Player', 'season'], keep='first')
 
-#clean data
+
+    #clean data
     df.drop(columns=['award_season', 'key_player_id'], inplace=True)
     df.drop_duplicates(inplace=True)
 
+    df = df.sort_values(by='season', ascending=True)
+
+    df[f'num_{award_name}_selections_before'] = df.groupby('Player')[f'this_season_{award_name}'].cumsum() - df[
+        f'this_season_{award_name}']
+
     df.to_csv(f'test',index=False)
     print("test created")
+
+
+
+
 
 
 
@@ -482,5 +496,12 @@ if __name__ == "__main__":
     # seperating_team_records('expanded_standings','expanded_standings')
     # award_check("KEY_MVP",'test_award_adjusted','MVP','csv')
     # drop_dupes('award_adjusted')
-    # award_season_checks("KEY_ALLSTAR","TEMP",'ALLSTAR','sql')
+    # award_season_checks_and_count("KEY_SMOY","test",'SMOY','csv')
+    # query = QUERIES.get('TEMP', None)
+
+    # df = pd.read_csv('test', low_memory=False)
+    # player = ['Stephen Curry']
+    # df_filtered = df[df['Player'].isin(player)]
+    # print(df_filtered)
+
 
