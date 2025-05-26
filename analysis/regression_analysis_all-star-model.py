@@ -23,20 +23,20 @@ engine = create_engine(
 QUERIES ={
 'MAIN_DATA' :
     """
-     SELECT * from staging.logr_allstar_data
+     SELECT * from staging.new_logr_allstar_data
     """,
 
     'TRAINING_DATA':
     """
-    SELECT * from staging.logr_allstar_data
+    SELECT * from staging.new_logr_allstar_data
     where season < 2023 
     and season > 1950
     """,
 
     'PRED_DATA':
         """
-        SELECT * from staging.logr_allstar_data
-        where season = 2024
+        SELECT * from staging.new_logr_allstar_data
+        where season >= 2023
         """,
 
 
@@ -51,8 +51,10 @@ def regression_var_test(query_input):
     # X = df[['GS','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
     #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
 
-    X = df[['GS','3P%','FT%','Pos',"PTS percentile", "AST percentile","TRB percentile","BLK percentile","TOV percentile",
-            'won MVP','won DPOY','pre_win_precentage']].copy() #model 2
+    X = df[["GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
+            "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
+            "won ALLSTAR"]].copy() #model 2
+
     y = df['this_season_ALLSTAR'].astype(int)
 
     # convert bool to int for initial bool columns
@@ -96,12 +98,12 @@ def all_star_model_analysis(query):
     query = QUERIES.get(query, None)
     df = pd.read_sql(query, engine)
     # print(df.columns)
-    # X = df[['GS','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+    # X = df[['GS percentile group','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
     #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
 
-
-    X = df[['GS','Pos','3P%','FT%',"PTS percentile", "AST percentile","TRB percentile","STL percentile","BLK percentile","TOV percentile",
-            'won MVP','won DPOY','pre_win_precentage','won ALLSTAR']].copy() #model 2
+    X = df[["GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
+            "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
+            "won ALLSTAR"]].copy()  # model 2
 
     y = df['this_season_ALLSTAR'].astype(int)
     # convert bool to int for initial bool columns
@@ -153,7 +155,7 @@ def all_star_model_analysis(query):
         cm = confusion_matrix(y_test, y_pred)
         print(f"Baseline Threshold: {t:.2f}, Recall: {recall:.3f}, Precision: {precision:.3f}, F1: {f1:.3f}, FN: {cm[1, 0]}, FP: {cm[0, 1]}")
 
-    calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
+    calibrated_model = CalibratedClassifierCV(all_star_model, method='sigmoid', cv='prefit')
     calibrated_model.fit(X_train, y_train)
 
     # get predicted probabilities (positive class)
@@ -192,7 +194,7 @@ def all_star_model_analysis(query):
 
     # Cross Validation
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    threshold = 0.35
+    threshold = 0.4
 
     f1_scores, precisions, recalls, aucs = [], [], [], []
 
@@ -203,7 +205,7 @@ def all_star_model_analysis(query):
         all_star_model = LogisticRegression(penalty='l2', solver='liblinear', class_weight='balanced')
         all_star_model.fit(X_train, y_train)
 
-        calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
+        calibrated_model = CalibratedClassifierCV(all_star_model, method='sigmoid', cv='prefit')
         calibrated_model.fit(X_train, y_train)
 
         y_proba = calibrated_model.predict_proba(X_val)[:, 1]
@@ -247,10 +249,9 @@ def all_star_model_analysis(query):
     results_df = pd.merge(results_df, df1[['Age','Player','season']],
                           left_index=True, right_index=True, how='left')
     results_df.to_csv("results_df", index=False)
-
 # all_star_model_analysis("TRAINING_DATA")
 
-def all_star_model(query,C = 100, threshold = 0.35):
+def all_star_model(query,C = 100, threshold = 0.4):
     """
         Trains and calibrates a logistic regression model to predict NBA All-Star selections.
         query = TEST_DATA
@@ -262,12 +263,12 @@ def all_star_model(query,C = 100, threshold = 0.35):
     query = QUERIES.get(query, None)
     df = pd.read_sql(query, engine)
 
-    # X = df[['GS', 'won ALLSTAR', 'pre_win_precentage', 'PTS percentile group', 'TRB percentile group',
-    #         'AST percentile group', 'STL percentile group', 'BLK percentile group', 'TOV percentile group'
-    #     , 'won MVP', 'won DPOY', 'won MIP']].copy() #model 1
+    # X = df[['GS percentile group','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+    #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
 
-    X = df[['GS','Pos','3P%','FT%',"PTS percentile", "AST percentile","TRB percentile","STL percentile","BLK percentile","TOV percentile",
-            'won MVP','won DPOY','pre_win_precentage','won ALLSTAR']].copy() #model 2
+    X = df[["GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
+            "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
+            "won ALLSTAR"]].copy()  # model 2
 
     y = df['this_season_ALLSTAR'].astype(int)
 
@@ -307,12 +308,13 @@ def prediction_data(query):
     """
     query = QUERIES.get(query, None)
     df = pd.read_sql(query, engine)
-    # X = df[['GS', 'won ALLSTAR', 'pre_win_precentage', 'PTS percentile group', 'TRB percentile group',
-    #         'AST percentile group', 'STL percentile group', 'BLK percentile group', 'TOV percentile group'
-    #     , 'won MVP', 'won DPOY', 'won MIP']].copy() #model 1
+    # X = df[['GS percentile group','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+    #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
 
-    X = df[['GS','Pos','3P%','FT%',"PTS percentile", "AST percentile","TRB percentile","STL percentile","BLK percentile","TOV percentile",
-            'won MVP','won DPOY','pre_win_precentage','won ALLSTAR']].copy() #model 2
+    X = df[["GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
+            "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
+            "won ALLSTAR"]].copy()  # model 2
+
     y = df['this_season_ALLSTAR'].astype(int)
 
     # convert bool to int for initial bool columns
@@ -354,5 +356,4 @@ def prediction_data(query):
     results_df.to_csv('prediction_results',index=False)
     results_df.to_sql('prediction_results', con=engine, if_exists='replace', index=False)
     print('Results saved to csv and database')
-
 # prediction_data("PRED_DATA")
