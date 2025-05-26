@@ -64,10 +64,10 @@ def percentile_group(file,stat,type):
 
 
     # df.to_csv(f'{file}.csv',index = False)
-    df.to_csv('award_adjusted_df',index = False)
+    df.to_csv('award_adjusted',index = False)
 
     print(f'{stat} percentile added')
 
 
 if __name__ == '__main__':
-    percentile_group('ALLSTAR_LR_DATA','GS','sql')
+    percentile_group('award_adjusted','DRB','csv')

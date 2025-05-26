@@ -62,4 +62,4 @@ def individual_df(file):
 if __name__ == "__main__":
     # combining_df("expanded_standings")
     # individual_df("../analysis/prediction_results")
-    individual_df("test_award_adjusted")
+    individual_df("award_adjusted")

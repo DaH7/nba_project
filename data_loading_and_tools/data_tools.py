@@ -481,6 +481,6 @@ if __name__ == "__main__":
     # db_to_csv('SEASON_TEAM_TOTAL')
     # seperating_team_records('expanded_standings','expanded_standings')
     # award_check("KEY_MVP",'test_award_adjusted','MVP','csv')
-    # drop_dupes('award_adjusted_df')
+    # drop_dupes('award_adjusted')
     # award_season_checks("KEY_ALLSTAR","TEMP",'ALLSTAR','sql')
 
