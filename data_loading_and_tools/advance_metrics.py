@@ -10,8 +10,13 @@ QUERIES = {
         """
         select * from updated_season_2025
         """,
-
+    'ALLSTAR_LR_DATA' :
+        """
+         SELECT * from staging.logr_allstar_data
+        """
            }
+
+
 
 
 
@@ -19,8 +24,17 @@ engine = create_engine(
     f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
 )
 
-def percentile_group(file,stat):
-    df = pd.read_csv(file)
+def percentile_group(file,stat,type):
+    """
+    Adds percentiles and percentile groups to a numeric stat and normalizes it be season
+    """
+    if type == 'sql':
+        query = QUERIES.get(file, None)
+        df = pd.read_sql(query, engine)
+    elif type =='csv':
+        df = pd.read_csv(file)
+    else:
+        raise ValueError(f"{type} does not exist, pick csv or sql")
 
     # actual percentage
     df[f'{stat} percentile'] = (df.groupby('season')[f'{stat}'].rank(pct=True)*100).round(1)
@@ -56,9 +70,4 @@ def percentile_group(file,stat):
 
 
 if __name__ == '__main__':
-    percentile_group('award_adjusted_df','PTS')
-    percentile_group('award_adjusted_df', 'AST')
-    percentile_group('award_adjusted_df', 'TRB')
-    percentile_group('award_adjusted_df', 'STL')
-    percentile_group('award_adjusted_df', 'BLK')
-    percentile_group('award_adjusted_df', 'TOV')
+    percentile_group('ALLSTAR_LR_DATA','GS','sql')

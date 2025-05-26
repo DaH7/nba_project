@@ -426,7 +426,6 @@ def drop_dupes(csv_file):
     df.to_csv(f'award_adjusted_df', index=False)
     print(f"Duplicates dropped: {before - after}")
 
-
 def award_season_checks(key,query,award_name,type):
     """
     checks if they won a certain award this season
