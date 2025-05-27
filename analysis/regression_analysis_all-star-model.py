@@ -45,15 +45,19 @@ QUERIES ={
 def regression_var_test(query_input):
     query = QUERIES.get(query_input, None)
     df = pd.read_sql(query, engine)
-    # print(df.columns)
+    print(df.columns)
 
     # #find which variables are most impactful in producing all stars
-    # X = df[['GS','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
-    #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
+    X = df[['GS percentile group','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+        ,'won MVP','won DPOY','won MIP']].copy() #model 0
 
-    X = df[["eFG% percentile","GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
-            "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
-            "won ALLSTAR"]].copy() #model 2
+    # X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
+    #         "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
+    #         "won ALLSTAR"]].copy() #model 1
+
+    # X = df[["Age","eFG% percentile","GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile",
+    #         "BLK percentile", "TOV percentile", "pre_win_precentage", "num_DPOY_selections_before",
+    #         "num_ALLSTAR_selections_before",'num_MIP_selections_before']].copy() #model 2
 
     y = df['this_season_ALLSTAR'].astype(int)
 
@@ -90,7 +94,7 @@ def regression_var_test(query_input):
     vif_df['variable'] = X.columns
     vif_df['VIF'] = [variance_inflation_factor(X.values,i) for i in range(X.shape[1])]
     print(vif_df)
-regression_var_test('MAIN_DATA')
+# regression_var_test('MAIN_DATA')
 
 
 def all_star_model_analysis(query):
@@ -98,12 +102,16 @@ def all_star_model_analysis(query):
     query = QUERIES.get(query, None)
     df = pd.read_sql(query, engine)
     # print(df.columns)
-    # X = df[['GS percentile group','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
-    #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
+    X = df[['GS percentile group','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+        ,'won MVP','won DPOY','won MIP']].copy() #model 0
 
-    X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
-            "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
-            "won ALLSTAR"]].copy()  # model 2
+    # X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
+    #         "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
+    #         "won ALLSTAR"]].copy()  # model 1
+
+    # X = df[["GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile",
+    #         "BLK percentile", "TOV percentile", "pre_win_precentage", "num_DPOY_selections_before",
+    #         "num_ALLSTAR_selections_before",'num_MIP_selections_before']].copy() #model 2
 
     y = df['this_season_ALLSTAR'].astype(int)
     # convert bool to int for initial bool columns
@@ -156,8 +164,8 @@ def all_star_model_analysis(query):
         print(f"Baseline Threshold: {t:.2f}, Recall: {recall:.3f}, Precision: {precision:.3f}, F1: {f1:.3f}, FN: {cm[1, 0]}, FP: {cm[0, 1]}")
 
     #update to best C
-    all_star_model = LogisticRegression(penalty='l2', solver='liblinear', class_weight='balanced',C = 10).fit(X_train, y_train)
-    calibrated_model = CalibratedClassifierCV(all_star_model, method='sigmoid', cv='prefit')
+    all_star_model = LogisticRegression(penalty='l2', solver='liblinear', class_weight='balanced',C = 100).fit(X_train, y_train)
+    calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
     calibrated_model.fit(X_train, y_train)
 
     # get predicted probabilities (positive class)
@@ -167,7 +175,7 @@ def all_star_model_analysis(query):
     prob_true, prob_pred = calibration_curve(y_test, y_proba, n_bins=10)
 
     # Apply custom threshold (0.35) to get class predictions
-    threshold = 0.3
+    threshold = 0.35
     y_pred_custom = (y_proba >= threshold).astype(int)
 
     # checking confusion matrix and classifcation report for calibrated model
@@ -196,7 +204,7 @@ def all_star_model_analysis(query):
 
     # Cross Validation
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    threshold = 0.3
+    threshold = 0.35
 
     f1_scores, precisions, recalls, aucs = [], [], [], []
 
@@ -207,7 +215,7 @@ def all_star_model_analysis(query):
         all_star_model = LogisticRegression(penalty='l2', solver='liblinear', class_weight='balanced')
         all_star_model.fit(X_train, y_train)
 
-        calibrated_model = CalibratedClassifierCV(all_star_model, method='sigmoid', cv='prefit')
+        calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
         calibrated_model.fit(X_train, y_train)
 
         y_proba = calibrated_model.predict_proba(X_val)[:, 1]
@@ -251,7 +259,7 @@ def all_star_model_analysis(query):
     results_df = pd.merge(results_df, df1[['Age','Player','season']],
                           left_index=True, right_index=True, how='left')
     results_df.to_csv("results_df", index=False)
-# all_star_model_analysis("TRAINING_DATA")
+all_star_model_analysis("TRAINING_DATA")
 
 def all_star_model(query,C = 10, threshold = 0.3):
     """
@@ -302,8 +310,6 @@ def all_star_model(query,C = 10, threshold = 0.3):
     calibrated_model.fit(X, y)
 
     return calibrated_model, X, y, threshold
-
-
 def prediction_data(query):
     """
     preparing data for prediction
