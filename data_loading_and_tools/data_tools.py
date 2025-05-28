@@ -496,7 +496,7 @@ if __name__ == "__main__":
     # seperating_team_records('expanded_standings','expanded_standings')
     # award_check("KEY_MVP",'test_award_adjusted','MVP','csv')
     # drop_dupes('award_adjusted')
-    award_season_checks_and_count("KEY_DPOY","test",'DPOY','csv')
+    # award_season_checks_and_count("KEY_DPOY","test",'DPOY','csv')
     # query = QUERIES.get('TEMP', None)
 
     # df = pd.read_csv('test', low_memory=False)
