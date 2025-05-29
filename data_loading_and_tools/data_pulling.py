@@ -79,30 +79,76 @@ def expanded_standings(start_year, end_year):
 
         time.sleep(5)
 
-def standings(start_year,end_year,type):
-    years =range(start_year,end_year + 1)
-    for year in years:
-        url =  f"https://www.basketball-reference.com/leagues/NBA_{year}_standings.html"
 
-        tables = pd.read_html(url)
-        if type == 'east':
-            df = tables[0]  # first table on page
-        elif type == 'west':
-            df = tables[1]
-        elif type == 'div_east':
-            df = tables[2]
-        elif type == 'div_west':
-            df = tables[3]
+def standings(start_year, end_year, division_type = 'none'):
+    """
+    grabs the division standings of each yeah in the nba
+    returns full division standings for all years before 1970 and gets all years in east and west for 1971 forward
+    """
+    years = range(start_year, end_year + 1)
+    for year in years:
+        if year >= 1950:
+            url = f"https://www.basketball-reference.com/leagues/NBA_{year}_standings.html"
+        else:
+            url = f"https://www.basketball-reference.com/leagues/BAA_{year}_standings.html"
 
         try:
-            #save to csv
-            filename = f'{type}_standings_{year}.csv'
-            df.to_csv(filename,index = False)
+            response = requests.get(url)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
 
-            print(f"Successfully saved {filename}")
+            # Initialize table_html
+            table_html = None
+
+            # Search for tables in comments
+            comments = soup.find_all(string=lambda text: isinstance(text, Comment))
+            for comment in comments:
+                comment_soup = BeautifulSoup(comment, "html.parser")
+                if year <= 1970:
+                    table = comment_soup.find("table", {"id": "divs_standings_"})
+                    if table:
+                        table_html = table
+                        break
+                else:
+                    if division_type == 'west':
+                        table = comment_soup.find("table", {"id": "divs_standings_W"})
+                        if table:
+                            table_html = table
+                            break
+                    elif division_type == 'east':
+                        table = comment_soup.find("table", {"id": "divs_standings_E"})
+                        if table:
+                            table_html = table
+                            break
+
+            # If not found in comments, search in main HTML
+            if not table_html:
+                if year >= 1971:
+                    if division_type == 'west':
+                        table_html = soup.find("table", {"id": "divs_standings_W"})
+                    elif division_type == 'east':
+                        table_html = soup.find("table", {"id": "divs_standings_E"})
+                else:
+                    table_html = soup.find("table", {"id": "divs_standings_"})
+
+            # If table is found, process and save
+            if table_html:
+                df = pd.read_html(StringIO(str(table_html)))[0]
+                if year >= 1971:
+                    filename = f'{division_type}_div_standings_{year}.csv'
+                else:
+                    filename = f'all_div_standings_{year}.csv'
+
+                df.to_csv(filename, index=False)
+                print(f"Saved {filename}")
+            else:
+                print(f"No standings table found for {year}")
+
         except Exception as e:
-             print(f"Failed to get data for {year}: {e}")
+            print(f"Failed to fetch or parse data for {year}: {e}")
+
         time.sleep(5)
+
 
 def team_stats(start_year,end_year,type):
     """
@@ -314,8 +360,10 @@ if __name__ == "__main__":
     # player_total_stat_pull(1947,2025,"season")
     # player_avg_stat_pull(1947,2024,'playoff')
     # expanded_standings(1947,2025)
-    # standings(2024,2024, 'west')
+    # standings(1947,1970)
+    # standings(1971, 2025, 'west')
+    # standings(1971, 2025, 'east')
     # all_star_roster(1998,2000)
     # draft_class(1947,1949)
-    awards('mvp')
+    # awards('mvp')
 

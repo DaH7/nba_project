@@ -12,10 +12,7 @@ engine = create_engine(
 )
 
 def combining_df(folder):
-    expected_col = ["Rk","Team","Overall","Home","Road","E","W","A","C",
-                    "SE","NW","P","SW","Pre","Post","≤3","≥10",
-                    "Oct","Nov","Dec","Jan","Feb","Mar","Apr","season"
-        ]
+    expected_col = ["Western Conference","W","L"",W/L%","GB","PS/G","PA/G","SRS","season"]
 
     csv_files = glob.glob(os.path.join(folder,"*.csv"))
     df_list=[]
@@ -60,6 +57,6 @@ def individual_df(file):
 
 
 if __name__ == "__main__":
-    # combining_df("expanded_standings")
+    combining_df("west_div")
     # individual_df("../analysis/prediction_results")
-    individual_df("test")
+    # individual_df("award_adjusted")
