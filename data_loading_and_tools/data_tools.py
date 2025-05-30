@@ -58,9 +58,21 @@ QUERIES = {
         select "Player","season","player_id" from final.roy_2025
         """,
 
+    "old_all_div":
+        """
+        SELECT * from old_all_div
+        """,
+    "e_div":
+        """
+        SELECT * from east_div
+        """,
+    "w_div":
+        """
+        SELECT * from west_div
+        """,
     "TEMP":
         """
-        SELECT * from staging.LogR_allstar_data
+        SELECT * from cleaned_df
         """,
 }
 engine = create_engine(
@@ -117,10 +129,11 @@ def team_retool(query,type):
         raise ValueError("source_type must be 'sql' or 'csv'")
 
     df['abrv_team'] = ''
-    df['playoff'] = ''
-    # if team has * in their name, playoffs columns is yes, otherwise no
-    df['playoff'] = df['Team'].str.contains(r'\*').map({True: 'yes', False: 'no'})
+    # df['playoff'] = ''
+    # # if team has * in their name, playoffs columns is yes, otherwise no
+    # df['playoff'] = df['Team'].str.contains(r'\*').map({True: 'yes', False: 'no'})
     # clean all * from name, make a dictionary of team names shorthand longhand
+    df['Team'] = df['Team'].str.strip()
     df['Team'] = df['Team'].str.replace('*', '', regex=False)
     df=df.drop_duplicates()
 
@@ -480,7 +493,17 @@ def award_season_checks_and_count(key,query,award_name,type):
     df.to_csv(f'test',index=False)
     print("test created")
 
+def data_cleaning(query):
+    """
+    removes *, numbers and () from a column
 
+    """
+    query = QUERIES.get(query, None)
+    df = pd.read_sql(query, engine)
+
+    df['Team'] = df['Team'].str.replace(r'[\d\*\(\)]', '', regex=True)
+    df.to_csv(f'cleaned_df',index=False)
+    print('cleaned df saved')
 
 
 
@@ -489,14 +512,16 @@ def award_season_checks_and_count(key,query,award_name,type):
 if __name__ == "__main__":
     # removing_rows('roy.csv')
     # awards_season_retool('roy.csv')
-    # team_retool( "expanded_standings",'sql')
+    team_retool( "TEMP",'sql')
     # remove_col('team_id_test')
     # franchise_grouping('retooled_og_team.csv')
-    # db_to_csv('SEASON_TEAM_TOTAL')
+    # data_cleaning('TEMP')
     # seperating_team_records('expanded_standings','expanded_standings')
     # award_check("KEY_MVP",'test_award_adjusted','MVP','csv')
     # drop_dupes('award_adjusted')
     # award_season_checks_and_count("KEY_DPOY","test",'DPOY','csv')
+
+
     # query = QUERIES.get('TEMP', None)
 
     # df = pd.read_csv('test', low_memory=False)
