@@ -71,7 +71,7 @@ def percentile_group(file,stat,type):
 
 def VOP(team_file,type):
     """
-    calculates value of possession, factor and DRB%
+    calculates value of possession (vof), factor and DRB%
 
     returns: DataFrame with columns ['team', 'team_id', 'season', 'VOP']
     """
@@ -90,6 +90,7 @@ def VOP(team_file,type):
             'PTS': 'sum',
             'FG': 'sum',
             'FGA': 'sum',
+            'AST': 'sum',
             'TRB': 'sum',
             'ORB': 'sum',
             'TOV': 'sum',
@@ -113,11 +114,10 @@ def VOP(team_file,type):
     #DRB%
     league_totals['DRB%'] = (league_totals['lg_TRB'] - league_totals['lg_ORB'])/league_totals['lg_TRB']
 
-    result = df[['team', 'team_id', 'season']].drop_duplicates()
-    result = result.merge(league_totals[['season', 'VOP','factor','DRB']], on='season', how='left')
+    result = df[['Team','season','abrv_team','team_id']].drop_duplicates()
+    result = result.merge(league_totals[['season', 'VOP','factor','DRB%']], on='season', how='left')
 
     return result
-
 
 
 def player_eff_rating(team_file,player_file,type):
@@ -140,3 +140,6 @@ def player_eff_rating(team_file,player_file,type):
 
 if __name__ == '__main__':
     # percentile_group('ALLSTAR_LR_DATA','eFG%','sql')
+    temp = VOP('SEASON_TEAM_TOTAL','sql')
+
+    print(temp[temp['season'] == 2024])
