@@ -89,7 +89,7 @@ QUERIES = {
         """,
     "TEMP":
         """
-        select * from expanded_standings 
+        select * from retooled_sql 
         """
 
 
@@ -147,7 +147,6 @@ def matching_player_id(query_key,query_df,type,to_db='no'):
     else:
         print('No data sent to db')
 
-
 def matching_team_id(query_key,query_df,type,to_db ='no'):
     """
     sql: ADD THE NEEDED QUERY AND CALL IT TO query_df
@@ -190,7 +189,6 @@ def matching_team_id(query_key,query_df,type,to_db ='no'):
         new_df.to_sql('team_id_test', engine, if_exists='replace', index=False)
     else:
         print('No data sent to db')
-
 
 def matching_team(query_key, query_df,type,to_db= 'no'):
 
@@ -257,6 +255,6 @@ def generating_new_id(query,id_length):
 
 
 if __name__ == "__main__":
-    matching_team_id("ROY_KEY","TEMP","csv")
-    # matching_team("TEAM_KEY","TEMP")
+    # matching_team_id("ROY_KEY","TEMP","csv")
+    matching_team_id("TEAM_KEY","TEMP",'sql',)
     # matching_player_id("ALL_PLAYER_KEY","roy.csv","csv")

@@ -149,7 +149,6 @@ def standings(start_year, end_year, division_type = 'none'):
 
         time.sleep(5)
 
-
 def team_stats(start_year,end_year,type):
     """
     type
@@ -360,9 +359,6 @@ if __name__ == "__main__":
     # player_total_stat_pull(1947,2025,"season")
     # player_avg_stat_pull(1947,2024,'playoff')
     # expanded_standings(1947,2025)
-    # standings(1947,1970)
-    # standings(1971, 2025, 'west')
-    # standings(1971, 2025, 'east')
     # all_star_roster(1998,2000)
     # draft_class(1947,1949)
     # awards('mvp')
