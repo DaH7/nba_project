@@ -92,9 +92,6 @@ QUERIES = {
         select * from retooled_sql 
         """
 
-
-
-
 }
 
 engine = create_engine(
