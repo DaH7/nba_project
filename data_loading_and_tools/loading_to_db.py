@@ -59,4 +59,4 @@ def individual_df(file):
 if __name__ == "__main__":
     # combining_df("overall_division")
     # individual_df("../analysis/prediction_results")
-    individual_df("retooled_sql")
+    individual_df("temp")
