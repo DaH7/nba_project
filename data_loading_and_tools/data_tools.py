@@ -501,7 +501,12 @@ def data_cleaning(query):
     query = QUERIES.get(query, None)
     df = pd.read_sql(query, engine)
 
-    df['Team'] = df['Team'].str.replace(r'[\d\*\(\)]', '', regex=True)
+    #removes *, numbers and () from a column
+    # df['Team'] = df['Team'].str.replace(r'[\d\*\(\)]', '',regex=True)
+    # removes *
+    df['Team'] = df['Team'].str.replace('*', '', regex=False)
+
+    df['Team'] = df['Team'].str.strip()
     df.to_csv(f'cleaned_df',index=False)
     print('cleaned df saved')
 
@@ -512,7 +517,7 @@ def data_cleaning(query):
 if __name__ == "__main__":
     # removing_rows('roy.csv')
     # awards_season_retool('roy.csv')
-    team_retool( "TEMP",'sql')
+    # team_retool( "TEMP",'sql')
     # remove_col('team_id_test')
     # franchise_grouping('retooled_og_team.csv')
     # data_cleaning('TEMP')

@@ -12,7 +12,8 @@ engine = create_engine(
 )
 
 def combining_df(folder):
-    expected_col = ["Team","W","L","W/L%","GB","PS/G","PA/G","SRS","season"]
+    expected_col = ["Rk","Team","G","MP","FG","FGA","FG%","3P","3PA","3P%","2P","2PA","2P%","FT",
+                    "FTA","FT%","ORB","DRB","TRB","AST","STL","BLK","TOV","PF","PTS","season"]
 
     csv_files = glob.glob(os.path.join(folder,"*.csv"))
     df_list=[]
@@ -21,9 +22,9 @@ def combining_df(folder):
     for file in csv_files:
         df = pd.read_csv(file)
 
-        #fills the season column based on csv name
-        # season = os.path.basename(file).split("_")[-1].replace(".csv","")
-        # df['season'] = int(season)
+        # fills the season column based on csv name
+        season = os.path.basename(file).split("_")[-1].replace(".csv","")
+        df['season'] = int(season)
 
         #if col does not exist, it fills with NA
         for col in expected_col:
@@ -57,6 +58,6 @@ def individual_df(file):
 
 
 if __name__ == "__main__":
-    # combining_df("overall_division")
+    # combining_df("total_opp_team_stats")
     # individual_df("../analysis/prediction_results")
     individual_df("temp")

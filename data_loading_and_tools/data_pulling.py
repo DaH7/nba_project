@@ -79,7 +79,6 @@ def expanded_standings(start_year, end_year):
 
         time.sleep(5)
 
-
 def standings(start_year, end_year, division_type = 'none'):
     """
     grabs the division standings of each yeah in the nba
@@ -159,8 +158,9 @@ def team_stats(start_year,end_year,type):
     Advanced Stats: advanced-team
     Shooting: shooting-team
     Miscellaneous: misc-team
-    Opponent Per Game: opponent-per_game
+    Opponent Per Game: per_game-opponent
     Four Factors: four_factors
+    total opponent stat: totals-opponent
     """
     years = range(start_year, end_year + 1)
     for year in years:
@@ -355,7 +355,7 @@ def awards(award_type):
 
 
 if __name__ == "__main__":
-    # team_stats(2025,2025,"advanced-team")
+    team_stats(1947,2025,"totals-opponent")
     # player_total_stat_pull(1947,2025,"season")
     # player_avg_stat_pull(1947,2024,'playoff')
     # expanded_standings(1947,2025)

@@ -221,13 +221,13 @@ def matching_team(query_key, query_df,type,to_db= 'no'):
     print(f"Unmatched entries: {len(unmatched)}")
     print("Unique Teams in df:", df['abrv_team'].nunique())
     print("Unique Teams in key:", key['abrv_team'].nunique())
-    # print("Unique team names in df:", df['Team'].unique())
-    # print("Unique team names in key:", key['Team'].unique())
 
-    new_df.to_csv('team_name_test.csv')
+
+    new_df.to_csv('team_name_test')
 
     if to_db == "yes":
         new_df.to_sql('team_name_test', engine, if_exists='replace', index=False)
+        print('df sent to db')
     else:
         print('No data sent to db')
 
@@ -253,5 +253,5 @@ def generating_new_id(query,id_length):
 
 if __name__ == "__main__":
     # matching_team_id("ROY_KEY","TEMP","csv")
-    matching_team_id("TEAM_KEY","TEMP",'sql',)
+    matching_team_id("TEAM_KEY","TEMP",'sql',"yes")
     # matching_player_id("ALL_PLAYER_KEY","roy.csv","csv")
