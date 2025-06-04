@@ -39,6 +39,11 @@ QUERIES ={
         where season >= 2023
         """,
 
+    "LOG_R_DATA":
+        """
+        SELECT * FROM raw_logr_allstar_data
+        """
+
 
 }
 
