@@ -42,9 +42,20 @@ QUERIES ={
     "LOG_R_DATA":
         """
         SELECT * FROM raw_logr_allstar_data
+        """,
+
+        "TRAINING_DATA_2":
         """
+        SELECT * FROM raw_logr_allstar_data
+            where season < 2023 
+         and season > 1950
+        """,
 
-
+        'PRED_DATA_2':
+        """
+        SELECT * from raw_logr_allstar_data
+        where season >= 2023
+        """,
 }
 
 def regression_var_test(query_input):
@@ -52,13 +63,13 @@ def regression_var_test(query_input):
     df = pd.read_sql(query, engine)
     print(df.columns)
 
-    # #find which variables are most impactful in producing all stars
-    X = df[['GS percentile group','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
-        ,'won MVP','won DPOY','won MIP']].copy() #model 0
+    # # #find which variables are most impactful in producing all stars
+    # X = df[['GS percentile group','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
+    #     ,'PER percentile group','won MVP','won DPOY','won MIP']].copy() #model 0
 
-    # X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
-    #         "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
-    #         "won ALLSTAR"]].copy() #model 1
+    X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
+            "BLK percentile", "TOV percentile", "PER percentile","won MVP", "won DPOY", "pre_win_precentage",
+            "won ALLSTAR"]].copy() #model 1
 
     # X = df[["Age","eFG% percentile","GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile",
     #         "BLK percentile", "TOV percentile", "pre_win_precentage", "num_DPOY_selections_before",
@@ -99,7 +110,7 @@ def regression_var_test(query_input):
     vif_df['variable'] = X.columns
     vif_df['VIF'] = [variance_inflation_factor(X.values,i) for i in range(X.shape[1])]
     print(vif_df)
-# regression_var_test('MAIN_DATA')
+# regression_var_test('LOG_R_DATA')
 
 
 def all_star_model_analysis(query):
@@ -107,12 +118,12 @@ def all_star_model_analysis(query):
     query = QUERIES.get(query, None)
     df = pd.read_sql(query, engine)
     # print(df.columns)
-    X = df[['GS percentile group','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
-        ,'won MVP','won DPOY','won MIP']].copy() #model 0
+    # X = df[['GS percentile group','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group',
+    #     'PER percentile group','won MVP','won DPOY','won MIP']].copy() #model 0
 
-    # X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
-    #         "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
-    #         "won ALLSTAR"]].copy()  # model 1
+    X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
+            "BLK percentile", "TOV percentile","PER percentile", "won MVP", "won DPOY", "pre_win_precentage",
+            "won ALLSTAR"]].copy()  # model 1
 
     # X = df[["GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile",
     #         "BLK percentile", "TOV percentile", "pre_win_precentage", "num_DPOY_selections_before",
@@ -170,7 +181,7 @@ def all_star_model_analysis(query):
 
     #update to best C
     all_star_model = LogisticRegression(penalty='l2', solver='liblinear', class_weight='balanced',C = 100).fit(X_train, y_train)
-    calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
+    calibrated_model = CalibratedClassifierCV(all_star_model, method='sigmoid', cv='prefit')
     calibrated_model.fit(X_train, y_train)
 
     # get predicted probabilities (positive class)
@@ -180,7 +191,7 @@ def all_star_model_analysis(query):
     prob_true, prob_pred = calibration_curve(y_test, y_proba, n_bins=10)
 
     # Apply custom threshold (0.35) to get class predictions
-    threshold = 0.35
+    threshold = 0.3
     y_pred_custom = (y_proba >= threshold).astype(int)
 
     # checking confusion matrix and classifcation report for calibrated model
@@ -220,7 +231,7 @@ def all_star_model_analysis(query):
         all_star_model = LogisticRegression(penalty='l2', solver='liblinear', class_weight='balanced')
         all_star_model.fit(X_train, y_train)
 
-        calibrated_model = CalibratedClassifierCV(all_star_model, method='isotonic', cv='prefit')
+        calibrated_model = CalibratedClassifierCV(all_star_model, method='sigmoid', cv='prefit')
         calibrated_model.fit(X_train, y_train)
 
         y_proba = calibrated_model.predict_proba(X_val)[:, 1]
@@ -264,9 +275,9 @@ def all_star_model_analysis(query):
     results_df = pd.merge(results_df, df1[['Age','Player','season']],
                           left_index=True, right_index=True, how='left')
     results_df.to_csv("results_df", index=False)
-all_star_model_analysis("TRAINING_DATA")
+# all_star_model_analysis("TRAINING_DATA_2")
 
-def all_star_model(query,C = 10, threshold = 0.3):
+def all_star_model(query,C = 100, threshold = 0.3):
     """
         Trains and calibrates a logistic regression model to predict NBA All-Star selections.
         query = TEST_DATA
@@ -282,7 +293,7 @@ def all_star_model(query,C = 10, threshold = 0.3):
     #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
 
     X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
-            "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
+            "BLK percentile", "TOV percentile", "PER percentile","won MVP", "won DPOY", "pre_win_precentage",
             "won ALLSTAR"]].copy()  # model 2
 
     y = df['this_season_ALLSTAR'].astype(int)
@@ -325,7 +336,7 @@ def prediction_data(query):
     #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
 
     X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
-            "BLK percentile", "TOV percentile", "won MVP", "won DPOY", "pre_win_precentage",
+            "BLK percentile", "TOV percentile","PER percentile","won MVP", "won DPOY", "pre_win_precentage",
             "won ALLSTAR"]].copy()  # model 2
 
     y = df['this_season_ALLSTAR'].astype(int)
@@ -354,7 +365,7 @@ def prediction_data(query):
     X_test = X.reindex(columns=X.columns, fill_value=0)
 
 
-    calibrated_model, X_train, y_train, threshold = all_star_model("TRAINING_DATA")
+    calibrated_model, X_train, y_train, threshold = all_star_model("TRAINING_DATA_2")
     # Predict probabilities for positive class
     y_proba_test = calibrated_model.predict_proba(X_test)[:, 1]
 
@@ -369,4 +380,4 @@ def prediction_data(query):
     results_df.to_csv('prediction_results',index=False)
     results_df.to_sql('prediction_results', con=engine, if_exists='replace', index=False)
     print('Results saved to csv and database')
-# prediction_data("PRED_DATA")
+prediction_data("PRED_DATA_2")
