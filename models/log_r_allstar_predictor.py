@@ -67,13 +67,13 @@ def regression_var_test(query_input):
     # X = df[['GS percentile group','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
     #     ,'PER percentile group','won MVP','won DPOY','won MIP']].copy() #model 0
 
-    X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
-            "BLK percentile", "TOV percentile", "PER percentile","won MVP", "won DPOY", "pre_win_precentage",
-            "won ALLSTAR"]].copy() #model 1
+    # X = df[["GS percentile","PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
+    #         "BLK percentile", "TOV percentile", "PER percentile","won MVP", "won DPOY", "pre_win_precentage",
+    #         "won ALLSTAR"]].copy() #model 1
 
-    # X = df[["Age","eFG% percentile","GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile",
-    #         "BLK percentile", "TOV percentile", "pre_win_precentage", "num_DPOY_selections_before",
-    #         "num_ALLSTAR_selections_before",'num_MIP_selections_before']].copy() #model 2
+    X = df[["Age","GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile",
+            "BLK percentile", "TOV percentile","PER percentile", "pre_win_precentage", "num_DPOY_selections_before",
+            "num_ALLSTAR_selections_before",'num_MIP_selections_before']].copy() #model 2
 
     y = df['this_season_ALLSTAR'].astype(int)
 
@@ -121,13 +121,13 @@ def all_star_model_analysis(query):
     # X = df[['GS percentile group','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group',
     #     'PER percentile group','won MVP','won DPOY','won MIP']].copy() #model 0
 
-    X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
-            "BLK percentile", "TOV percentile","PER percentile", "won MVP", "won DPOY", "pre_win_precentage",
-            "won ALLSTAR"]].copy()  # model 1
-
-    # X = df[["GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile",
-    #         "BLK percentile", "TOV percentile", "pre_win_precentage", "num_DPOY_selections_before",
-    #         "num_ALLSTAR_selections_before",'num_MIP_selections_before']].copy() #model 2
+    # X = df[
+    #     ["eFG% percentile", "GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile",
+    #      "STL percentile", "BLK percentile", "TOV percentile", "PER percentile", "won MVP", "won DPOY",
+    #      "pre_win_precentage", "won ALLSTAR"]].copy()
+    X = df[["Age","GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile",
+            "BLK percentile", "TOV percentile","PER percentile", "pre_win_precentage", "num_DPOY_selections_before",
+            "num_ALLSTAR_selections_before",'num_MIP_selections_before']]
 
     y = df['this_season_ALLSTAR'].astype(int)
     # convert bool to int for initial bool columns
@@ -292,9 +292,9 @@ def all_star_model(query,C = 100, threshold = 0.3):
     # X = df[['GS percentile group','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
     #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
 
-    X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
-            "BLK percentile", "TOV percentile", "PER percentile","won MVP", "won DPOY", "pre_win_precentage",
-            "won ALLSTAR"]].copy()  # model 2
+    X = df[["Age","GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile",
+            "BLK percentile", "TOV percentile","PER percentile", "pre_win_precentage", "num_DPOY_selections_before",
+            "num_ALLSTAR_selections_before",'num_MIP_selections_before']]
 
     y = df['this_season_ALLSTAR'].astype(int)
 
@@ -335,9 +335,9 @@ def prediction_data(query):
     # X = df[['GS percentile group','Age','won ALLSTAR','pre_win_precentage','PTS percentile group','TRB percentile group','AST percentile group','STL percentile group','BLK percentile group','TOV percentile group'
     #     ,'won MVP','won DPOY','won MIP']].copy() #model 1
 
-    X = df[["eFG% percentile","GS percentile", "Pos", "3P%", "FT%", "PTS percentile", "AST percentile", "TRB percentile", "STL percentile",
-            "BLK percentile", "TOV percentile","PER percentile","won MVP", "won DPOY", "pre_win_precentage",
-            "won ALLSTAR"]].copy()  # model 2
+    X = df[["Age","GS percentile","Pos", "PTS percentile", "AST percentile", "TRB percentile",
+            "BLK percentile", "TOV percentile","PER percentile", "pre_win_precentage", "num_DPOY_selections_before",
+            "num_ALLSTAR_selections_before",'num_MIP_selections_before']]
 
     y = df['this_season_ALLSTAR'].astype(int)
 
@@ -380,4 +380,4 @@ def prediction_data(query):
     results_df.to_csv('prediction_results',index=False)
     results_df.to_sql('prediction_results', con=engine, if_exists='replace', index=False)
     print('Results saved to csv and database')
-prediction_data("PRED_DATA_2")
+# prediction_data("PRED_DATA_2")
