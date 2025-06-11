@@ -29,6 +29,14 @@ QUERIES = {
     "OPP_TEAM_TOTAL":
         """
         select * from opp_team_stats_total
+        """,
+        "PER":
+        """
+        select * from staging.PER_2025
+        """,
+        "LOG_R_DATA":
+        """
+        SELECT * FROM raw_logr_allstar_data
         """
            }
 
@@ -77,9 +85,9 @@ def percentile_group(file,stat,type):
 
 
     # df.to_csv(f'{file}.csv',index = False)
-    df.to_csv('award_adjusted',index = False)
+    df.to_csv(f'{stat} percentile',index = False)
 
-    print(f'{stat} percentile added')
+    print(f'{stat}_percentile added')
 
 def PER(player_file, team_file, opp_file, type_):
     """
@@ -281,7 +289,7 @@ def PER(player_file, team_file, opp_file, type_):
 
 
 if __name__ == '__main__':
-    # percentile_group('ALLSTAR_LR_DATA','eFG%','sql')
-    temp = PER('SEASON_TOTAL','SEASON_TEAM_TOTAL','OPP_TEAM_TOTAL','sql')
-    temp.to_csv('temp', index = False)
-    print(temp)
+    percentile_group('PER','PER','sql')
+    # temp = PER('SEASON_TOTAL','SEASON_TEAM_TOTAL','OPP_TEAM_TOTAL','sql')
+    # temp.to_csv('temp', index = False)
+    # print(temp)
