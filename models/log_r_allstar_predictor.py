@@ -1,6 +1,5 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from holoviews.plotting.bokeh.styles import font_size
 from sqlalchemy import create_engine
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from config import DB_CONFIG
@@ -11,7 +10,6 @@ from sklearn.metrics import classification_report, confusion_matrix, roc_auc_sco
 from sklearn.model_selection import GridSearchCV
 from sklearn.calibration import calibration_curve,CalibratedClassifierCV
 from sklearn.model_selection import StratifiedKFold
-import seaborn as sns
 import numpy as np
 
 
