@@ -273,7 +273,7 @@ def all_star_model_analysis(query):
     results_df = pd.merge(results_df, df1[['Age','Player','season']],
                           left_index=True, right_index=True, how='left')
     results_df.to_csv("results_df", index=False)
-# all_star_model_analysis("TRAINING_DATA_2")
+all_star_model_analysis("TRAINING_DATA_2")
 
 def all_star_model(query,C = 100, threshold = 0.3):
     """
@@ -324,6 +324,7 @@ def all_star_model(query,C = 100, threshold = 0.3):
     calibrated_model.fit(X, y)
 
     return calibrated_model, X, y, threshold
+
 def prediction_data(query):
     """
     preparing data for prediction
