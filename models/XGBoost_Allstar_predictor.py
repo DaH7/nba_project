@@ -111,7 +111,10 @@ def all_star_model(query):
         'n_estimators': [50, 100, 200],
         'max_depth': [3, 5, 7],
         'learning_rate': [0.01, 0.1, 0.3],
-        'scale_pos_weight': [scale_pos_weight]  # fixed to address imbalance
+        'scale_pos_weight': [scale_pos_weight],  # fixed to address imbalance
+        'reg_alpha': [0, 0.1, 1],
+        'reg_lambda': [1, 5, 10]
+
     }
 
     grid = GridSearchCV(
@@ -124,7 +127,10 @@ def all_star_model(query):
     grid.fit(X_train, y_train)
 
     best_model = grid.best_estimator_
-    # print("Best parameters:", grid.best_params_)
+    print("Best parameters:", grid.best_params_)
+    #M1 parameters: {'learning_rate': 0.1, 'max_depth': 7, 'n_estimators': 200, 'scale_pos_weight': 11.081944444444444}
+    #M2 parameters: {'learning_rate': 0.3, 'max_depth': 8, 'n_estimators': 300, 'scale_pos_weight': 11.081944444444444}
+    #M3 parameters: {'learning_rate': 0.3, 'max_depth': 7, 'n_estimators': 100, 'reg_alpha': 0.1, 'reg_lambda': 10, 'scale_pos_weight': 11.081944444444444}
 
     final_model = XGBClassifier(
         learning_rate=0.1,
@@ -132,7 +138,9 @@ def all_star_model(query):
         n_estimators=200,
         scale_pos_weight=11.081944444444444,
         eval_metric='logloss',
-        random_state=42
+        random_state= 42,
+        reg_lambda = 10,
+        reg_alpha = 0.1
     )
     final_model.fit(X_train, y_train)
 
