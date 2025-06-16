@@ -133,9 +133,9 @@ def all_star_model(query):
     #M3 parameters: {'learning_rate': 0.3, 'max_depth': 7, 'n_estimators': 100, 'reg_alpha': 0.1, 'reg_lambda': 10, 'scale_pos_weight': 11.081944444444444}
 
     final_model = XGBClassifier(
-        learning_rate=0.1,
+        learning_rate=0.3,
         max_depth=7,
-        n_estimators=200,
+        n_estimators=100,
         scale_pos_weight=11.081944444444444,
         eval_metric='logloss',
         random_state= 42,
