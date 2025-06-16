@@ -131,7 +131,6 @@ def all_star_model(query):
     #M1 parameters: {'learning_rate': 0.1, 'max_depth': 7, 'n_estimators': 200, 'scale_pos_weight': 11.081944444444444}
     #M2 parameters: {'learning_rate': 0.3, 'max_depth': 8, 'n_estimators': 300, 'scale_pos_weight': 11.081944444444444}
     #M3 parameters: {'learning_rate': 0.3, 'max_depth': 7, 'n_estimators': 100, 'reg_alpha': 0.1, 'reg_lambda': 10, 'scale_pos_weight': 11.081944444444444}
-
     final_model = XGBClassifier(
         learning_rate=0.3,
         max_depth=7,
