@@ -11,6 +11,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.calibration import calibration_curve,CalibratedClassifierCV
 from sklearn.model_selection import StratifiedKFold
 import numpy as np
+import joblib
 
 
 
@@ -218,7 +219,7 @@ def all_star_model_analysis(query):
 
     # Cross Validation
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    threshold = 0.35
+    threshold = 0.3
 
     f1_scores, precisions, recalls, aucs = [], [], [], []
 
@@ -380,3 +381,6 @@ def prediction_data(query):
     results_df.to_sql('prediction_results', con=engine, if_exists='replace', index=False)
     print('Results saved to csv and database')
 # prediction_data("PRED_DATA_2")
+
+#save model
+# joblib.dump(all_star_model("TRAINING_DATA_2"),'logreg_allstar_model.pkl')
