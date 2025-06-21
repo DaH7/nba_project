@@ -330,7 +330,9 @@ def awards(award_type):
         'dpoy': 'dpoy_NBA',
         'smoy': 'smoy_NBA',
         'mip': 'mip_NBA',
-        'all_league': 'awards_all_league'
+        'all_league': 'awards_all_league',
+        'all_rookie': 'awards_all_rookie',
+        'all_defense': 'awards_all_defense'
     }
 
     try:
@@ -355,11 +357,11 @@ def awards(award_type):
 
 
 if __name__ == "__main__":
-    team_stats(1947,2025,"totals-opponent")
+    # team_stats(1947,2025,"totals-opponent")
     # player_total_stat_pull(1947,2025,"season")
     # player_avg_stat_pull(1947,2024,'playoff')
     # expanded_standings(1947,2025)
     # all_star_roster(1998,2000)
     # draft_class(1947,1949)
-    # awards('mvp')
+    # awards('all_defense')
 

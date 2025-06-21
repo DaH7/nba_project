@@ -3,7 +3,7 @@ import pandas as pd
 import random
 from sqlalchemy import create_engine
 from config import DB_CONFIG
-
+import re
 
 
 QUERIES = {
@@ -493,25 +493,45 @@ def award_season_checks_and_count(key,query,award_name,type):
     df.to_csv(f'test',index=False)
     print("test created")
 
-def data_cleaning(query):
+def data_cleaning(query,type):
     """
     removes *, numbers and () from a column
 
     """
-    query = QUERIES.get(query, None)
-    df = pd.read_sql(query, engine)
+    if type == 'sql':
+        query = QUERIES.get(query, None)
+        df = pd.read_sql(query, engine)
+    elif type == 'csv':
+        df = pd.read_csv(query)
+    else:
+        raise ValueError('sql or csv only')
 
     #removes *, numbers and () from a column
     # df['Team'] = df['Team'].str.replace(r'[\d\*\(\)]', '',regex=True)
     # removes *
-    df['Team'] = df['Team'].str.replace('*', '', regex=False)
+    # df['Team'] = df['Team'].str.replace('*', '', regex=False)
+    #removes ,,,,,,,,
 
     df['Team'] = df['Team'].str.strip()
     df.to_csv(f'cleaned_df',index=False)
     print('cleaned df saved')
 
 
+def team_award_cleaner(csv):
+    with open(csv, 'r',encoding='utf-8') as f:
+        lines = f.readlines()
 
+    # Remove lines that only contain commas (and whitespace/newlines)
+    cleaned_lines = []
+    for line in lines:
+        if re.fullmatch(r'\s*,+\s*\n?', line):
+            continue  # skip lines with only commas
+        # # Remove all double quotes and all occurrences of (T)
+        # line = line.replace('"', '').replace('(T)', '')
+        cleaned_lines.append(line)
+
+    with open(f'cleaned_{csv}', 'w') as f:
+        f.writelines(cleaned_lines)
 
 
 if __name__ == "__main__":
@@ -520,19 +540,14 @@ if __name__ == "__main__":
     # team_retool( "TEMP",'sql')
     # remove_col('team_id_test')
     # franchise_grouping('retooled_og_team.csv')
-    # data_cleaning('TEMP')
+    # data_cleaning('all_defense','csv')
     # seperating_team_records('expanded_standings','expanded_standings')
     # award_check("KEY_MVP",'test_award_adjusted','MVP','csv')
     # drop_dupes('per_percentile')
     # award_season_checks_and_count("KEY_DPOY","test",'DPOY','csv')
-    db_to_csv("TEMP")
+    # db_to_csv("TEMP")
+    team_award_cleaner('all_')
 
 
-    # query = QUERIES.get('TEMP', None)
-
-    # df = pd.read_csv('test', low_memory=False)
-    # player = ['Stephen Curry']
-    # df_filtered = df[df['Player'].isin(player)]
-    # print(df_filtered)
 
 
