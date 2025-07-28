@@ -516,22 +516,42 @@ def data_cleaning(query,type):
     df.to_csv(f'cleaned_df',index=False)
     print('cleaned df saved')
 
-
 def team_award_cleaner(csv):
-    with open(csv, 'r',encoding='utf-8') as f:
+    '''
+    automates the process of getting all nba teams such as rookie, def, etc to database
+    '''
+    with open(csv, 'r', encoding='utf-8') as f:
         lines = f.readlines()
+
+    name_fix = {
+        "Nikola JokiÄ" : "Nikola Jokić",
+        "Luka DonÄiÄ" : "Luka Dončić",
+        "Goran DragiÄ" : "Goran Dragić",
+        "Peja StojakoviÄ" : "Peja Stojaković",
+        "DraÅ¾en PetroviÄ" : "Dražen Petrović"
+    }
+
 
     # Remove lines that only contain commas (and whitespace/newlines)
     cleaned_lines = []
     for line in lines:
+        #fix names
+        for bad_name, good_name in name_fix.items():
+            line = line.replace(bad_name, good_name)
+        # remove trailing position before a comma
+        line = re.sub(r'\s*\b([CFG](?:-[CFG])*)\b(?=,|\n|$)', '', line)
+
         if re.fullmatch(r'\s*,+\s*\n?', line):
             continue  # skip lines with only commas
-        # # Remove all double quotes and all occurrences of (T)
-        # line = line.replace('"', '').replace('(T)', '')
         cleaned_lines.append(line)
 
-    with open(f'cleaned_{csv}', 'w') as f:
+
+    with open(f'cleaned_{csv}', 'w', encoding='utf-8') as f:
         f.writelines(cleaned_lines)
+
+    print(f"Cleaned file saved as: cleaned_{csv}")
+
+
 
 
 if __name__ == "__main__":
@@ -546,7 +566,7 @@ if __name__ == "__main__":
     # drop_dupes('per_percentile')
     # award_season_checks_and_count("KEY_DPOY","test",'DPOY','csv')
     # db_to_csv("TEMP")
-    team_award_cleaner('all_')
+    team_award_cleaner('all_defense')
 
 
 
