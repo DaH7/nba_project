@@ -540,6 +540,9 @@ def team_award_cleaner(csv):
             line = line.replace(bad_name, good_name)
         # remove trailing position before a comma
         line = re.sub(r'\s*\b([CFG](?:-[CFG])*)\b(?=,|\n|$)', '', line)
+        # fix season string
+        line = re.sub(r'(\d{4})-(\d{2})', lambda m: str(int(m.group(1)[:2] + m.group(2))), line)
+        line = line.replace("1900", "2000") #scuffed fix but it works
 
         if re.fullmatch(r'\s*,+\s*\n?', line):
             continue  # skip lines with only commas
@@ -560,7 +563,7 @@ if __name__ == "__main__":
     # team_retool( "TEMP",'sql')
     # remove_col('team_id_test')
     # franchise_grouping('retooled_og_team.csv')
-    # data_cleaning('all_defense','csv')
+    # data_cleaning('og_all_defense','csv')
     # seperating_team_records('expanded_standings','expanded_standings')
     # award_check("KEY_MVP",'test_award_adjusted','MVP','csv')
     # drop_dupes('per_percentile')

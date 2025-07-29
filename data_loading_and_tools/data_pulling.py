@@ -1,10 +1,14 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup,Comment
+import csv
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from bs4 import BeautifulSoup
+import pandas as pd
 from io import StringIO
 import time
-import csv
-
+import random
 
 def player_avg_stat_pull(start_year,end_year,type):
     years =range(start_year,end_year + 1)
@@ -336,7 +340,15 @@ def awards(award_type):
     }
 
     try:
-        response = requests.get(url)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Connection': 'keep-alive',
+            'Referer': 'https://www.basketball-reference.com/',
+            'Upgrade-Insecure-Requests': '1',
+        }
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
         table_html = soup.find("table", {"id": table_id_dict[f'{award_type}']})
@@ -354,6 +366,60 @@ def awards(award_type):
 
 
 
+def awards_selenium(award_type):
+    """
+    mvp: MOST VALUABLE PLAYER
+    dpoy: DEFENSIVE PLAYER OF THE YEAR
+    smoy: SIXTH MAN OF THE YEAR
+    mip: MOST IMPROVED PLAYER
+    roy: ROOKIE OF THE YEAR
+    all_league: ALL NBA TEAMS
+    all_rookie : ALL ROOKIE
+    all_defense: ALL DEFENSE
+    """
+
+    url = f'https://www.basketball-reference.com/awards/{award_type}.html'
+
+    table_id_dict = {
+        'mvp': 'mvp_NBA',
+        'roy': 'roy_NBA',
+        'dpoy': 'dpoy_NBA',
+        'smoy': 'smoy_NBA',
+        'mip': 'mip_NBA',
+        'all_league': 'awards_all_league',
+        'all_rookie': 'awards_all_rookie',
+        'all_defense': 'awards_all_defense'
+    }
+
+    try:
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")  # comment this out if you want to see the browser
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+
+        driver = webdriver.Chrome(options=chrome_options)
+        driver.get(url)
+        time.sleep(random.uniform(2, 13))  # wait for page to load
+
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+        driver.quit()
+
+        table_id = table_id_dict.get(award_type)
+        if not table_id:
+            raise ValueError(f"Invalid award_type: {award_type}")
+
+        table_html = soup.find("table", {"id": table_id})
+        if table_html:
+            df = pd.read_html(StringIO(str(table_html)))[0]
+            filename = f'{award_type}.csv'
+            df.to_csv(filename, index=False)
+            print(f" Successfully saved {filename}")
+        else:
+            print(f" Table with ID '{table_id}' not found on the page.")
+
+    except Exception as e:
+        print(f" Failed to get data for {award_type}: {e}")
+
 
 
 if __name__ == "__main__":
@@ -363,5 +429,6 @@ if __name__ == "__main__":
     # expanded_standings(1947,2025)
     # all_star_roster(1998,2000)
     # draft_class(1947,1949)
-    # awards('all_defense')
+    # awards('mvp')
 
+    awards_selenium('all_league')
