@@ -396,7 +396,32 @@ def awards_selenium(award_type):
     except Exception as e:
         print(f" Failed to get data for {award_type}: {e}")
 
+def champ_history():
+    url = 'https://www.basketball-reference.com/playoffs/'
+    try:
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")  # comment this out if you want to see the browser
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
 
+        driver = webdriver.Chrome(options=chrome_options)
+        driver.get(url)
+        time.sleep(random.uniform(2, 13))  # wait for page to load
+
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+        table_html = soup.find("table", {"id": "champions_index"})
+        driver.quit()
+
+        if table_html:
+            df = pd.read_html(StringIO(str(table_html)))[0]
+            filename = f'finals_history.csv'
+            df.to_csv(filename, index=False)
+            print(f"Successfully saved {filename}")
+        else:
+            print(f"Table not found f")
+
+    except Exception as e:
+        print(f"Failed to get data: {e}")
 
 if __name__ == "__main__":
     # team_stats(1947,2025,"totals-opponent")
@@ -407,4 +432,5 @@ if __name__ == "__main__":
     # awards('mvp')
     # awards_selenium('all_league')
     # draft_class_selenium(2025,2025)
-    player_avg_stat_pull_selenium(2025,2025,'playoff')
+    # player_avg_stat_pull_selenium(2025,2025,'playoff')
+    champ_history()
