@@ -569,7 +569,7 @@ if __name__ == "__main__":
     # drop_dupes('per_percentile')
     # award_season_checks_and_count("KEY_DPOY","test",'DPOY','csv')
     # db_to_csv("TEMP")
-    team_award_cleaner('all_defense')
+    # team_award_cleaner('all_defense')
 
 
 
