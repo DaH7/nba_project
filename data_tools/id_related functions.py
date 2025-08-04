@@ -100,6 +100,7 @@ engine = create_engine(
 
 def matching_player_id(query_key,query_df,type,to_db='no'):
     """
+    MATCHES PLAYER ID TO PLAYER NAME KEY
     sql: ADD THE NEEDED QUERY AND CALL IT TO query_df
     csv: INPUT THE CSV FILE TO query_df
     """
@@ -112,6 +113,7 @@ def matching_player_id(query_key,query_df,type,to_db='no'):
         df = pd.read_sql(query_2,engine)
     elif type =="csv":
         df = pd.read_csv(f"{query_df}")
+        df.columns = df.columns.str.strip()
     else:
         raise ValueError("source_type must be 'sql' or 'csv'")
 
@@ -120,13 +122,28 @@ def matching_player_id(query_key,query_df,type,to_db='no'):
     df['Player'] = df['Player'].str.strip()
     key['Player'] = key['Player'].str.strip()
 
+    #clean names for CHAMPIONSHIP DATASET
+    # df['runnerup_abrv_team'] = df['runnerup_abrv_team'].str.replace('*', '', regex=False)
+    # df['champ_abrv_team'] = df['champ_abrv_team'].str.replace('*', '', regex=False)
+    # df['Finals MVP'] = df['Finals MVP'].str.strip()
+    # key['Player'] = key['Player'].str.strip()
 
+
+    #default code
     key['player_id'] = key['player_id'].astype('int64')
     new_df = df.merge(
         key[['Player',"season",'player_id']],
         on = ['Player',"season"],
         how = 'left'
     )
+
+    #CHAMPIONSHIP DATASET
+    # new_df = df.merge(
+    #     key[['Player', 'season', 'player_id']],
+    #     left_on=['Finals MVP', 'Year'],
+    #     right_on=['Player', 'season'],
+    #     how='left'
+    # )
 
     unmatched = new_df[new_df['player_id'].isna()]
     new_df = new_df.drop_duplicates(keep='first')
@@ -146,6 +163,7 @@ def matching_player_id(query_key,query_df,type,to_db='no'):
 
 def matching_team_id(query_key,query_df,type,to_db ='no'):
     """
+    MATCHES TEAM ID WITH ABV TEAM NAMES FROM TEAM KEY
     sql: ADD THE NEEDED QUERY AND CALL IT TO query_df
     csv: INPUT THE CSV FILE TO query_df
     """
@@ -164,7 +182,7 @@ def matching_team_id(query_key,query_df,type,to_db ='no'):
     df.columns = df.columns.str.strip()
 
 
-
+    #default code
     key['team_id'] = key['team_id'].astype('int64')
     new_df = df.merge(
         key[['abrv_team',"season", 'team_id']],
@@ -172,13 +190,25 @@ def matching_team_id(query_key,query_df,type,to_db ='no'):
         how = 'left'
     )
 
+    # #CHAMPSHIP DATASET
+    # key['team_id'] = key['team_id'].astype('int64')
+    # new_df = df.merge(
+    #     key[['abrv_team',"season", 'team_id']],
+    #     left_on = ['runnerup_abrv_team', 'Year'],
+    #     right_on = ['abrv_team',"season"],
+    #     how = 'left'
+    # )
+
     unmatched = new_df[new_df['team_id'].isna()]
     new_df = new_df.drop_duplicates(keep='first')
 
     print(f"Unmatched entries: {len(unmatched)}")
-    print("Unique abrv_teams in df:", df['abrv_team'].nunique())
+    # print("Unique abrv_teams in df:", df['abrv_team'].nunique())
     print("Unique abrv_teams in key:", key['abrv_team'].nunique())
 
+    # # CHAMPSHIP DATASET
+    # print("Unique runnerup_abrv_team in df:", df['runnerup_abrv_team'].nunique())
+    # print("Unique champ_abrv_team in df:", df['champ_abrv_team'].nunique())
 
     new_df.to_csv('team_id_test')
 
@@ -253,5 +283,5 @@ def generating_new_id(query,id_length):
 
 if __name__ == "__main__":
     # matching_team_id("ROY_KEY","TEMP","csv")
-    matching_team_id("TEAM_KEY","TEMP",'sql',"yes")
-    # matching_player_id("ALL_PLAYER_KEY","roy.csv","csv")
+    # matching_team_id("TEAM_KEY","team_id_test",'csv',"yes")
+    # matching_player_id("ALL_PLAYER_KEY","retooled_csv","csv")

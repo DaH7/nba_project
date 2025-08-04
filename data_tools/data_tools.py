@@ -121,6 +121,7 @@ def awards_season_retool(file_path):
 
 def team_retool(data,type):
     '''
+    ADDS  TEAM ABRV AND IF PLAYER MADE PLAYOFF THAT SEASON
     sql: from db
     csv : from csv
     '''
@@ -132,6 +133,10 @@ def team_retool(data,type):
         df = pd.read_sql(query,engine)
     else:
         raise ValueError("source_type must be 'sql' or 'csv'")
+
+    # FOR CHAMPIONSHIP DATASET
+    # df['champ_abrv_team'] = ''
+    # df['runnerup_abrv_team'] = ''
 
     df['abrv_team'] = ''
     # df['playoff'] = ''
@@ -257,15 +262,20 @@ def team_retool(data,type):
     # Denver Nuggets
     df.loc[(df['Team'] == 'Denver Nuggets') & (df['season'] <= 1950), 'abrv_team'] = 'DNN'
 
+    #FOR FINALS HISTORY DATASET
+    # df['champ_abrv_team'] = df['Champion'].map(team_abbr_dict)
+    # df['runnerup_abrv_team'] = df['Runner-Up'].map(team_abbr_dict)
+
 
 
 
 
     df.to_csv(f'retooled_{type}', index=False)
-    return print(df)
+    return print(f'retooled_{type} created')
 
 def franchise_grouping(csv_file):
     """
+    SHOULD BE A ONE TIME USE FOR NOW
     groups nba franchises together
     This also gives completely new team ids..
     """
@@ -606,11 +616,6 @@ def championship_count(data,type):
                                      )
     print(df['Team'].unique())
 
-    print(df.loc[df['Champion'] == df['Team'], 'Team'].unique())
-    # print(df.loc[df['Runner-Up'] == df['Team'], 'Team'].unique())
-
-    print(mask.sum())  # Should match how many runner-up flags are True
-    print(df[mask][['Runner-Up', 'Team', 'season', 'Year']])
 
     #for each player + season, keep only 1 row, if the row is true, keep it and delete false , otherwise keep false
     df.sort_values(by=f'this_season_champion', ascending=False, inplace=True)  #sort to make true comes first
@@ -647,7 +652,7 @@ def championship_count(data,type):
 if __name__ == "__main__":
     # removing_rows('roy.csv')
     # awards_season_retool('roy.csv')
-    # team_retool( "TEMP",'sql')
+    # team_retool( "cleaned_finals_history.csv",'csv')
     # remove_col('team_id_test')
     # franchise_grouping('retooled_og_team.csv')
     # data_cleaning('og_all_defense','csv')
@@ -657,7 +662,7 @@ if __name__ == "__main__":
     # award_season_checks_and_count("KEY_ROY","test",'ROY','csv')
     # db_to_csv("TEMP")
     # team_award_cleaner('all_defense')
-    championship_count("TEMP","sql")
+    # championship_count("TEMP","sql")
 
 
 
