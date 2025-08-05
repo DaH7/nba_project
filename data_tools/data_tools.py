@@ -60,7 +60,8 @@ QUERIES = {
 
     "KEY_CHAMPIONSHIP":
         """
-        select * from final.KEY_CHAMPIONSHIP
+        select * from final.KEY_finals_history
+        where "Lg" = 'NBA'
         """,
 
     "old_all_div":
@@ -78,6 +79,7 @@ QUERIES = {
     "TEMP":
         """
         SELECT * from staging.top_75_players
+        where season > 1949
         """,
 }
 engine = create_engine(
@@ -595,24 +597,29 @@ def championship_count(data,type):
     #clean and merge the two df
     df.columns = df.columns.str.strip()
     key_df.columns = key_df.columns.str.strip()
+
+
+
     df = df.drop_duplicates()
+
+    df['season'] = df['season'].astype(int)
+    key_df['Year'] = key_df['Year'].astype(int)
     # df = df.merge(key_df, left_on='Team', right_on='Champion', how='left')
-    df = df.merge(key_df, left_on='Player', right_on='Finals MVP', how='left')
-    df['season'] = df['season'].astype('Int64')  # Nullable integer dtype
-    df['Year'] = df['Year'].astype('Int64')
+
+    df = df.merge(key_df, left_on=['season'], right_on=['Year'], how='left')
 
     #check if player won the award
-    df[f'this_season_champion'] = ((df['Champion'] == df['Team'])
+    df[f'this_season_champion'] = ((df['champ_team_id'] == df['team_id'])
                                & (df['season'] == df['Year'])
                                    )
 
-    df[f'this_season_runner_up'] = ((df['Runner-Up'] == df['Team'])
+    df[f'this_season_runner_up'] = ((df['runnerup_team_id'] == df['team_id'])
                                & (df['season'] == df['Year'])
                                     )
 
-    df[f'this_season_finals_mvp'] = ((df['Champion'] == df['Team'])
+    df[f'this_season_finals_mvp'] = ((df['champ_team_id'] == df['team_id'])
                                & (df['season'] == df['Year'])
-                              & (df['Finals MVP'] == df['Player'])
+                              & (df['finals_mvp_id'] == df['player_id'])
                                      )
     print(df['Team'].unique())
 
@@ -642,6 +649,9 @@ def championship_count(data,type):
     df[f'num_runner_up_overall'] = df.groupby('Player')[f'this_season_runner_up'].cumsum()
 
     df.to_csv(f'test',index=False)
+    print(df['season'].duplicated().sum())  # Any duplicate seasons?
+    print(key_df['Year'].duplicated().sum())  # Any duplicate years?
+
     print("test created")
 
 
@@ -662,7 +672,7 @@ if __name__ == "__main__":
     # award_season_checks_and_count("KEY_ROY","test",'ROY','csv')
     # db_to_csv("TEMP")
     # team_award_cleaner('all_defense')
-    # championship_count("TEMP","sql")
+    championship_count("TEMP","sql")
 
 
 
