@@ -60,4 +60,4 @@ def individual_df(file):
 if __name__ == "__main__":
     # combining_df("total_opp_team_stats")
     # individual_df("../analysis/prediction_results")
-    individual_df("team_id_test")
+    individual_df("test")

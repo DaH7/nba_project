@@ -78,8 +78,8 @@ QUERIES = {
         """,
     "TEMP":
         """
-        SELECT * from staging.top_75_players
-        where season > 1949
+        select * from staging.top_75_players  
+
         """,
 }
 engine = create_engine(
@@ -604,11 +604,10 @@ def championship_count(data,type):
 
     df['season'] = df['season'].astype(int)
     key_df['Year'] = key_df['Year'].astype(int)
-    # df = df.merge(key_df, left_on='Team', right_on='Champion', how='left')
 
     df = df.merge(key_df, left_on=['season'], right_on=['Year'], how='left')
 
-    #check if player won the award
+    # check if player won the award
     df[f'this_season_champion'] = ((df['champ_team_id'] == df['team_id'])
                                & (df['season'] == df['Year'])
                                    )
@@ -621,7 +620,6 @@ def championship_count(data,type):
                                & (df['season'] == df['Year'])
                               & (df['finals_mvp_id'] == df['player_id'])
                                      )
-    print(df['Team'].unique())
 
 
     #for each player + season, keep only 1 row, if the row is true, keep it and delete false , otherwise keep false
@@ -649,8 +647,6 @@ def championship_count(data,type):
     df[f'num_runner_up_overall'] = df.groupby('Player')[f'this_season_runner_up'].cumsum()
 
     df.to_csv(f'test',index=False)
-    print(df['season'].duplicated().sum())  # Any duplicate seasons?
-    print(key_df['Year'].duplicated().sum())  # Any duplicate years?
 
     print("test created")
 
