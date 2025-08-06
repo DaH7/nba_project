@@ -78,7 +78,8 @@ QUERIES = {
         """,
     "TEMP":
         """
-        select * from staging.top_75_players  
+        select * from cleaned_all_league
+    where "Season" is not null
 
         """,
 }
@@ -650,8 +651,32 @@ def championship_count(data,type):
 
     print("test created")
 
+def all_team_rearrangement(data,type,name):
+    if type == 'sql':
+        query = QUERIES.get(data, None)
+        df = pd.read_sql(query, engine)
+    elif type == 'csv':
+        df = pd.read_csv(data)
+    else:
+        raise ValueError('sql or csv only')
+    player_cols = [col for col in df.columns if col.startswith("Unnamed:")]
+
+    long_df = df.melt(
+        id_vars=["Season", "Lg", "Tm"],
+        value_vars=player_cols,
+        value_name="Player"
+    ).dropna(subset=["Player"])
+
+    long_df = long_df[["Season", "Lg", "Tm", "Player"]]
+    long_df = long_df.sort_values(
+        by= ["Season", "Lg", "Tm", "Player"],
+        ascending=[False, True, True, True]
+    ).reset_index(drop=True)
 
 
+    long_df.to_csv(f'{name}_long',index=False)
+
+    print(f'{name}_long_saved')
 
 
 
@@ -668,7 +693,8 @@ if __name__ == "__main__":
     # award_season_checks_and_count("KEY_ROY","test",'ROY','csv')
     # db_to_csv("TEMP")
     # team_award_cleaner('all_defense')
-    championship_count("TEMP","sql")
+    # championship_count("TEMP","sql")
+    all_team_rearrangement("TEMP","sql","all_nba")
 
 
 
