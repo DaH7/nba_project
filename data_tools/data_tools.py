@@ -651,7 +651,7 @@ def championship_count(data,type):
 
     print("test created")
 
-def all_team_rearrangement(data,type,name):
+def all_team_transpose(data,type,name):
     if type == 'sql':
         query = QUERIES.get(data, None)
         df = pd.read_sql(query, engine)
@@ -694,7 +694,7 @@ if __name__ == "__main__":
     # db_to_csv("TEMP")
     # team_award_cleaner('all_defense')
     # championship_count("TEMP","sql")
-    all_team_rearrangement("TEMP","sql","all_nba")
+    all_team_transpose("TEMP","sql","all_nba")
 
 
 
