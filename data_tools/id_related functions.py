@@ -87,9 +87,13 @@ QUERIES = {
         """
         select * from final.smoy_2025
         """,
+    "top75":
+        """
+        select * from top_75_players_draft 
+        """,
     "TEMP":
         """
-        select * from retooled_sql 
+        select * from all_defense_long
         """
 
 }
@@ -280,8 +284,73 @@ def generating_new_id(query,id_length):
     # df = pd.read_csv('undrafted_player_key')
     # df.to_sql('undrafted_player_key', engine, if_exists='replace', index=False)
 
+def matching_id_by_name(query_key,query_df,type,to_db='no'):
+    """
+        added PLAYER ID from key by player name and season
+        sql: ADD THE NEEDED QUERY AND CALL IT TO query_df
+        csv: INPUT THE CSV FILE TO query_df
+        """
+
+    query = QUERIES.get(query_key, None)
+    key = pd.read_sql(query, engine)
+
+    if type == "sql":
+        query_2 = QUERIES.get(query_df, None)
+        df = pd.read_sql(query_2, engine)
+    elif type == "csv":
+        df = pd.read_csv(f"{query_df}")
+        df.columns = df.columns.str.strip()
+    else:
+        raise ValueError("source_type must be 'sql' or 'csv'")
+
+    df['Player'] = df['Player'].str.strip()
+    key['Player'] = key['Player'].str.strip()
+
+
+    if 'Season' not in df.columns or 'season' not in key.columns:
+        raise KeyError("Both dataframes must contain 'Player' and season columns.")
+
+    #first match
+    key['Player'] = key['Player']
+    new_df = df.merge(
+        key[['Player',"season","player_id"]],
+        left_on = ['Player','Season'],
+        right_on = ['Player', 'season'],
+        how = 'left'
+    )
+
+    unmatched = new_df[new_df['player_id'].isna()]
+    new_df = new_df.drop_duplicates(keep='first')
+
+    matched = new_df[new_df['player_id'].notna()].copy()
+    unmatched = new_df[new_df['player_id'].isna()].copy()
+
+    #second match
+    # fallback = unmatched.drop(columns=['player_id', 'season'])  # drop columns to avoid conflict
+    # fallback = fallback.merge(
+    #     key[['Player', 'player_id']],
+    #     on='Player',
+    #     how='left'
+    # )
+    #
+    # final_df = pd.concat([matched, fallback], ignore_index=True)
+
+    print(f"Total rows: {len(df)}")
+    print(f"Matched by Player+Season: {len(matched)}")
+    # print(f"Fallback matched by Player only: {fallback['player_id'].notna().sum()}")
+    # print(f"Still unmatched: {final_df['player_id'].isna().sum()}")
+
+    new_df.to_csv('player_id_test')
+
+    if to_db == "yes":
+        new_df.to_sql('player_id_test', engine, if_exists='replace', index=False)
+    else:
+        print('No data sent to db')
+
+
 
 if __name__ == "__main__":
     # matching_team_id("ROY_KEY","TEMP","csv")
     # matching_team_id("TEAM_KEY","team_id_test",'csv',"yes")
-    # matching_player_id("ALL_PLAYER_KEY","retooled_csv","csv")
+    # matching_player_id("ALL_PLAYER_KEY","all_defense_long","csv")
+    matching_id_by_name("ALL_PLAYER_KEY","all_rookie_long","csv","yes")
