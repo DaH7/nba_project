@@ -717,26 +717,21 @@ def all_league_count(key, query, source_type):
 
 
     df = df.drop_duplicates()
-
-    # Make column names consistent before using them
     key_df = key_df.rename(columns={'Season': 'season'})
-
     df['season'] = df['season'].astype(int)
     key_df['season'] = key_df['season'].astype(int)
 
 
-    # Merge key_df info (season, player_id, tm)
     df = df.merge(key_df[['season', 'player_id', 'Tm']],
                   on=['season', 'player_id'], how='left')
 
-    # Flag award this season (any team)
-    df[f'this_season_{key}'] = df['Tm'].notna().astype(int)
 
-    # Counts total awards before and overall
+    #aggregate counts of overall teams
+    df[f'this_season_{key}'] = df['Tm'].notna().astype(int)
     df[f'{key}_before'] = df.groupby('Player')[f'this_season_{key}'].cumsum() - df[f'this_season_{key}']
     df[f'{key}_overall'] = df.groupby('Player')[f'this_season_{key}'].cumsum()
 
-    # Per-team rank counts (1st, 2nd, 3rd)
+    #seperates teams
     for team_rank in ['1st', '2nd', '3rd']:
 
         if team_rank not in df['Tm'].unique():
@@ -754,7 +749,7 @@ def all_league_count(key, query, source_type):
 
     df = df.drop(columns=['Tm'])
 
-    # Export CSV
+
     df.to_csv(f'temp_{key}', index=False)
     print(f'temp_{key} created')
 
