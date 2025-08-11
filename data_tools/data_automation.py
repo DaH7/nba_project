@@ -15,7 +15,7 @@ engine = create_engine(
 
 def award_auto(award_type):
     """
-    function: automates the process of getting all nba teams such as rookie, def, etc, clean the data and loads it to database
+     Automates the process of getting all nba teams such as rookie, def, etc, clean the data and loads it to database
 
     TYPES OF NBA TEAMS
     all_league: ALL NBA TEAMS
@@ -133,6 +133,7 @@ def award_auto(award_type):
 def champ_history_auto():
     """
     scraps,cleans, and uploads data of nba finals matchup and results such as finals mvp and max counting stats during the matchup
+
     """
     url = 'https://www.basketball-reference.com/playoffs/'
 
@@ -240,7 +241,8 @@ def champ_history_auto():
             "W. Reed": "Willis Reed",
             "J. West": "Jerry West",
             "J. Havlicek": "John Havlicek",
-            "W. Chamberlain": "Wilt Chamberlain"
+            "W. Chamberlain": "Wilt Chamberlain",
+            "D. Johnson": "Dennis Johnson"
         }
 
 
@@ -269,4 +271,4 @@ def champ_history_auto():
 
 if __name__ == "__main__":
     # award_auto()
-    # champ_history_auto()
+    champ_history_auto()
