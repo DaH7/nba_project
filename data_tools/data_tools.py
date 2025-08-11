@@ -693,11 +693,9 @@ def award_season_checks_and_count(key,query,award_name,type):
 
 def all_league_count(key, query, source_type):
     """
-    counts nba awards such as all rookie, all nba, and all def
+    counts nba awards such as all rookie, all nba, and all def and seperate them by team
+    returns overall counts and seperate counts via team
 
-    returns a True/False flag for award won that season
-    and count of how many times award was received overall and before current season
-    including breakdowns for 1st, 2nd, and 3rd teams
     """
     if source_type == 'sql':
         sql_query = QUERIES.get(query, None)
