@@ -51,7 +51,7 @@ def individual_folder_df(folder):
 
 def individual_df(file):
     df = pd.read_csv(f'{file}', low_memory=False)
-    csv_name = os.path.splitext(os.path.basename(file))[0]
+    csv_name = os.path.splitext(os.path.basename(file))[0].lower()
     df.to_sql(f'{csv_name}', con=engine, if_exists='replace', index=False)
     print(f'{csv_name} uploaded')
 
@@ -60,4 +60,4 @@ def individual_df(file):
 if __name__ == "__main__":
     # combining_df("total_opp_team_stats")
     # individual_df("../analysis/prediction_results")
-    individual_df("test")
+    individual_df("top_75_player_final")

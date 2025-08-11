@@ -76,10 +76,25 @@ QUERIES = {
         """
         SELECT * from west_div
         """,
+    "KEY_ALL_DEF":
+        """
+        select "Season","Lg","Tm","Player","player_id" from final.all_def_2025
+        where "Lg" = 'NBA'
+        """,
+    "KEY_ALL_NBA":
+        """
+        select "Season","Lg","Tm","Player","player_id" from final.all_nba_2025
+        where "Lg" = 'NBA'
+        """,
+    "KEY_ALL_ROOKIE":
+        """
+        select "Season","Lg","Tm","Player","player_id" from final.all_rookie_2025
+        where "Lg" = 'NBA'
+        """,
+
     "TEMP":
         """
-        select * from cleaned_all_league
-    where "Season" is not null
+        select * from temp_key_all_nba
 
         """,
 }
@@ -467,60 +482,6 @@ def drop_dupes(csv_file):
     df.to_csv(f'award_adjusted_df', index=False)
     print(f"Duplicates dropped: {before - after}")
 
-def award_season_checks_and_count(key,query,award_name,type):
-    """
-    checks if they won a certain award this season
-    returns a True and False for  award won for that season
-    and count of how many times award was received overall and before current season
-
-    """
-    if type == 'sql':
-        query = QUERIES.get(query, None)
-        df = pd.read_sql(query, engine)
-    elif type == 'csv':
-        df = pd.read_csv(query)
-    else:
-        raise ValueError('sql or csv only')
-
-    query_2 = QUERIES.get(key, None)
-    key_df = pd.read_sql(query_2, engine)
-
-    # rename columns in key
-    key_df = key_df.rename(columns={
-        'season': 'award_season',
-        'player_id': 'key_player_id'
-    })
-    key_df = key_df.drop_duplicates(subset=['Player', 'award_season', 'key_player_id'])
-
-    #clean and merge the two df
-    df.columns = df.columns.str.strip()
-    key_df.columns = key_df.columns.str.strip()
-    df = df.drop_duplicates()
-    df = df.merge(key_df, on= ['Player'], how = 'left')
-
-    #check if player won the award
-    df[f'this_season_{award_name}'] = ((df['season'] == df['award_season'])
-                               & (df['player_id'] == df['key_player_id']))
-
-    #for each player + season, keep only 1 row, if the row is true, keep it and delete false , otherwise keep false
-    df.sort_values(by=f'this_season_{award_name}', ascending=False, inplace=True)  #sort to make true comes first
-    df = df.drop_duplicates(subset=['Player', 'season'], keep='first')
-
-
-    #clean data
-    df.drop(columns=['award_season', 'key_player_id'], inplace=True)
-    df.drop_duplicates(inplace=True)
-    df = df.sort_values(by='season', ascending=True)
-
-
-    df[f'num_{award_name}_selections_before'] = df.groupby('Player')[f'this_season_{award_name}'].cumsum() - df[
-        f'this_season_{award_name}']
-
-    df[f'num_{award_name}_selections_overall'] = df.groupby('Player')[f'this_season_{award_name}'].cumsum()
-
-    df.to_csv(f'{award_name}_count',index=False)
-    print(f'{award_name}_count created')
-
 def data_cleaning(data,type):
     """
     removes *, numbers and () from a column
@@ -582,6 +543,33 @@ def team_award_cleaner(csv):
 
     print(f"Cleaned file saved as: cleaned_{csv}")
 
+def all_team_transpose(data,type,name):
+    if type == 'sql':
+        query = QUERIES.get(data, None)
+        df = pd.read_sql(query, engine)
+    elif type == 'csv':
+        df = pd.read_csv(data)
+    else:
+        raise ValueError('sql or csv only')
+    player_cols = [col for col in df.columns if col.startswith("Unnamed:")]
+
+    long_df = df.melt(
+        id_vars=["Season", "Lg", "Tm"],
+        value_vars=player_cols,
+        value_name="Player"
+    ).dropna(subset=["Player"])
+
+    long_df = long_df[["Season", "Lg", "Tm", "Player"]]
+    long_df = long_df.sort_values(
+        by= ["Season", "Lg", "Tm", "Player"],
+        ascending=[False, True, True, True]
+    ).reset_index(drop=True)
+
+
+    long_df.to_csv(f'{name}_long',index=False)
+
+    print(f'{name}_long_saved')
+
 def championship_count(data,type):
     if type == 'sql':
         query = QUERIES.get(data, None)
@@ -598,15 +586,12 @@ def championship_count(data,type):
     #clean and merge the two df
     df.columns = df.columns.str.strip()
     key_df.columns = key_df.columns.str.strip()
-
-
-
     df = df.drop_duplicates()
 
     df['season'] = df['season'].astype(int)
     key_df['Year'] = key_df['Year'].astype(int)
 
-    df = df.merge(key_df, left_on=['season'], right_on=['Year'], how='left')
+    df = df.merge(key_df, left_on='season', right_on='Year', how='left')
 
     # check if player won the award
     df[f'this_season_champion'] = ((df['champ_team_id'] == df['team_id'])
@@ -651,32 +636,129 @@ def championship_count(data,type):
 
     print("test created")
 
-def all_team_transpose(data,type,name):
+def award_season_checks_and_count(key,query,award_name,type):
+    """
+    checks if they won a certain award this season
+    returns a True and False for  award won for that season
+    and count of how many times award was received overall and before current season
+
+    """
     if type == 'sql':
-        query = QUERIES.get(data, None)
+        query = QUERIES.get(query, None)
         df = pd.read_sql(query, engine)
     elif type == 'csv':
-        df = pd.read_csv(data)
+        df = pd.read_csv(query)
     else:
         raise ValueError('sql or csv only')
-    player_cols = [col for col in df.columns if col.startswith("Unnamed:")]
 
-    long_df = df.melt(
-        id_vars=["Season", "Lg", "Tm"],
-        value_vars=player_cols,
-        value_name="Player"
-    ).dropna(subset=["Player"])
+    query_2 = QUERIES.get(key, None)
+    key_df = pd.read_sql(query_2, engine)
 
-    long_df = long_df[["Season", "Lg", "Tm", "Player"]]
-    long_df = long_df.sort_values(
-        by= ["Season", "Lg", "Tm", "Player"],
-        ascending=[False, True, True, True]
-    ).reset_index(drop=True)
+    # rename columns in key
+    key_df = key_df.rename(columns={
+        'season': 'award_season',
+        'player_id': 'key_player_id'
+    })
+    key_df = key_df.drop_duplicates(subset=['Player', 'award_season', 'key_player_id'])
+
+    #clean and merge the two df
+    df.columns = df.columns.str.strip()
+    key_df.columns = key_df.columns.str.strip()
+    df = df.drop_duplicates()
+    df = df.merge(key_df, on= ['Player'], how = 'left')
+
+    #check if player won the award
+    df[f'this_season_{award_name}'] = ((df['season'] == df['award_season'])
+                               & (df['player_id'] == df['key_player_id']))
+
+    #for each player + season, keep only 1 row, if the row is true, keep it and delete false , otherwise keep false
+    df.sort_values(by=f'this_season_{award_name}', ascending=False, inplace=True)  #sort to make true comes first
+    df = df.drop_duplicates(subset=['Player', 'season'], keep='first')
 
 
-    long_df.to_csv(f'{name}_long',index=False)
+    #clean data
+    df.drop(columns=['award_season', 'key_player_id'], inplace=True)
+    df.drop_duplicates(inplace=True)
+    df = df.sort_values(by='season', ascending=True)
 
-    print(f'{name}_long_saved')
+
+    df[f'num_{award_name}_selections_before'] = df.groupby('Player')[f'this_season_{award_name}'].cumsum() - df[
+        f'this_season_{award_name}']
+
+    df[f'num_{award_name}_selections_overall'] = df.groupby('Player')[f'this_season_{award_name}'].cumsum()
+
+    df.to_csv(f'{award_name}_count',index=False)
+    print(f'{award_name}_count created')
+
+
+def all_league_count(key, query, source_type):
+    """
+    counts nba awards such as all rookie, all nba, and all def
+
+    returns a True/False flag for award won that season
+    and count of how many times award was received overall and before current season
+    including breakdowns for 1st, 2nd, and 3rd teams
+    """
+    if source_type == 'sql':
+        sql_query = QUERIES.get(query, None)
+        if sql_query is None:
+            raise ValueError(f"No SQL query found for {query}")
+        df = pd.read_sql(sql_query, engine)
+    elif source_type == 'csv':
+        df = pd.read_csv(query)
+    else:
+        raise ValueError('source_type must be "sql" or "csv"')
+
+    sql_query_key = QUERIES.get(f"{key}", None)
+    if sql_query_key is None:
+        raise ValueError(f"No SQL query found for {key}")
+    key_df = pd.read_sql(sql_query_key, engine)
+
+
+
+    df = df.drop_duplicates()
+
+    # Make column names consistent before using them
+    key_df = key_df.rename(columns={'Season': 'season'})
+
+    df['season'] = df['season'].astype(int)
+    key_df['season'] = key_df['season'].astype(int)
+
+
+    # Merge key_df info (season, player_id, tm)
+    df = df.merge(key_df[['season', 'player_id', 'Tm']],
+                  on=['season', 'player_id'], how='left')
+
+    # Flag award this season (any team)
+    df[f'this_season_{key}'] = df['Tm'].notna().astype(int)
+
+    # Counts total awards before and overall
+    df[f'{key}_before'] = df.groupby('Player')[f'this_season_{key}'].cumsum() - df[f'this_season_{key}']
+    df[f'{key}_overall'] = df.groupby('Player')[f'this_season_{key}'].cumsum()
+
+    # Per-team rank counts (1st, 2nd, 3rd)
+    for team_rank in ['1st', '2nd', '3rd']:
+
+        if team_rank not in df['Tm'].unique():
+            continue
+
+        col_flag = f'this_season_{key}_{team_rank}'
+        df[col_flag] = (df['Tm'] == team_rank).astype(int)
+
+        df[f'{key}_{team_rank}_before'] = (
+            df.groupby('Player')[col_flag].cumsum() - df[col_flag]
+        )
+        df[f'{key}_{team_rank}_overall'] = (
+            df.groupby('Player')[col_flag].cumsum()
+        )
+
+    df = df.drop(columns=['Tm'])
+
+    # Export CSV
+    df.to_csv(f'temp_{key}', index=False)
+    print(f'temp_{key} created')
+
+    return df
 
 
 
@@ -694,7 +776,8 @@ if __name__ == "__main__":
     # db_to_csv("TEMP")
     # team_award_cleaner('all_defense')
     # championship_count("TEMP","sql")
-    all_team_transpose("TEMP","sql","all_nba")
+    # all_team_transpose("TEMP","sql","all_nba")
+    all_league_count('KEY_ALL_ROOKIE','TEMP','sql')
 
 
 
