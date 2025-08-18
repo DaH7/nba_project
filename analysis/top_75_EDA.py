@@ -18,6 +18,7 @@ QUERIES = {
     'test': """
     SELECT * 
     FROM staging.refined_top_75
+    where "Last Year Played" is not 2025
     
 """
 }
@@ -90,7 +91,7 @@ def position_count_pie(query_key):
 
 def counting_stats(query_key):
     """
-    pie charts for qualitative data of positions,position versitiliy and team loyalty
+    counting stats based on positions
     """
     if query_key not in QUERIES:
         raise ValueError(f"Invalid query key: {query_key}")
@@ -123,7 +124,8 @@ def counting_stats(query_key):
         y = "PPG",
         hover_data= ["Player", "First Year Played","Last Year Played", "Positions Played"],
         title = "PPG vs Avg Points Percentile",
-        color = "Position Label"
+        color = "Position Label",
+        color_discrete_map=color_map
     )
     pts_fig.show()
 
@@ -133,7 +135,8 @@ def counting_stats(query_key):
         y = "APG",
         hover_data= ["Player", "First Year Played","Last Year Played", "Positions Played"],
         title="APG vs Avg Assist Percentile",
-        color = "Position Label"
+        color = "Position Label",
+        color_discrete_map=color_map
     )
     ast_fig.show()
 
@@ -143,7 +146,8 @@ def counting_stats(query_key):
         y = "RPG",
         hover_data= ["Player", "First Year Played","Last Year Played", "Positions Played"],
         title = "RPG vs Avg REB Percentile",
-        color = "Position Label"
+        color = "Position Label",
+        color_discrete_map=color_map
     )
     reb_fig.show()
 
@@ -153,7 +157,8 @@ def counting_stats(query_key):
         y = "SPG",
         hover_data= ["Player", "First Year Played","Last Year Played", "Positions Played"],
         title="SPG vs Avg STL Percentile",
-        color = "Position Label"
+        color = "Position Label",
+        color_discrete_map=color_map
     )
     stl_fig.show()
 
@@ -163,11 +168,60 @@ def counting_stats(query_key):
         y = "BPG",
         hover_data= ["Player", "First Year Played","Last Year Played", "Positions Played"],
         title="BPG vs Avg BLK Percentile",
-        color = "Position Label"
+        color = "Position Label",
+        color_discrete_map=color_map
     )
     blk_fig.show()
 
+def age(query_key):
+    """
+    age and playing history for players
+    """
+    if query_key not in QUERIES:
+        raise ValueError(f"Invalid query key: {query_key}")
+
+    df = pd.read_sql(QUERIES[query_key], engine)
+
+    pos_map = {
+        'PG': 'G',
+        'SG': 'G',
+        'SF': 'F',
+        'PF': 'F',
+        'C': 'C'
+    }
+    df['Retired Age Label'] = df['Retired Age'].apply(
+        lambda x: 'Early 30s (30-33)' if x <= 33
+        else 'Mid 30s (34-36)' if x <= 36
+        else 'Late 30s (37-39)' if x <= 39
+        else 'Forties (40+)'
+    )
+
+    color_map = {
+        "Early 30s (30-33)": "green",
+        "Mid 30s (34-36)": "yellowgreen",
+        "Late 30s (37-39)": "orange",
+        'Forties (40+)': "red"
+    }
+    df["color"] = df["Retired Age Label"].map(color_map)
+
+    age_fig = px.scatter(
+        df,
+        x = "Last Year Played",
+        y = "Retired Age",
+        hover_data= ["Player", "First Year Played", "Positions Played"],
+        title = "Retired Age vs Last Year Played",
+        color = "Retired Age Label",
+        color_discrete_map=color_map,
+        category_orders={"Retired Age Label": [
+            "Early 30s (30-33)",
+            "Mid 30s (34-36)",
+            "Late 30s (37-39)",
+            "Forties (40+)"
+        ]}
+    )
+    age_fig.show()
 
 if __name__ == '__main__':
     # position_count_pie('top_75')
-    counting_stats('top_75')
+    # counting_stats('top_75')
+    age('top_75')
