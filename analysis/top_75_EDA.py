@@ -221,7 +221,189 @@ def age(query_key):
     )
     age_fig.show()
 
+def rewards(query_key):
+    """
+    List out all achievements from players including mvps, championships, all nba teams, etc...
+    (All Star Selection, Championship, Finals Mvp, Finals Lost,
+    Overall NBA Team Selection, All NBA First Team Selection, All NBA Second Team Selection, All NBA Third Team Selection,
+    All Defense Selection, All Defense First Team Selection, All Defense Second Team Selection,
+    Overall Rookie Team Selection, All Rookie First Team Selection, All Rookie Second Team Selection)
+    """
+
+    if query_key not in QUERIES:
+        raise ValueError(f"Invalid query key: {query_key}")
+
+    df = pd.read_sql(QUERIES[query_key], engine)
+    print(df.columns)
+
+    # All NBA Graphs
+    df_sorted = df.sort_values("Overall NBA Team Selection", ascending=False)
+    df_top20 = df_sorted.head(20)
+    df_long = df_top20.melt(
+        id_vars="Player",
+        value_vars=["All NBA First Team Selection", "All NBA Second Team Selection","All NBA Third Team Selection"],
+        var_name="Team Type",
+        value_name="Selections"
+    )
+
+    fig = px.bar(
+        df_long,
+        x="Player",
+        y="Selections",
+        color="Team Type",
+        barmode="stack",
+        title="Top 20 All NBA Selections per Player"
+    )
+
+    fig.show()
+    df_bot20 = df_sorted.tail(20)
+    df_long = df_bot20.melt(
+        id_vars="Player",
+        value_vars=["All NBA First Team Selection", "All NBA Second Team Selection","All NBA Third Team Selection"],
+        var_name="Team Type",
+        value_name="Selections"
+    )
+
+    fig = px.bar(
+        df_long,
+        x="Player",
+        y="Selections",
+        color="Team Type",
+        barmode="stack",
+        title="Bottom 20 All NBA Selections per Player"
+    )
+    fig.show()
+
+
+    #All Defense
+    df_sorted = df.sort_values("All Defense Selection", ascending=False)
+    df_top20 = df_sorted.head(20)
+    df_long = df_top20.melt(
+        id_vars="Player",
+        value_vars=["All Defense First Team Selection", "All Defense Second Team Selection"],
+        var_name="Team Type",
+        value_name="Selections"
+    )
+
+    fig = px.bar(
+        df_long,
+        x="Player",
+        y="Selections",
+        color="Team Type",
+        barmode="stack",
+        title="Top 20 All NBA Defense Selections per Player"
+    )
+    fig.show()
+
+    df_sorted = df.sort_values("All Defense Selection", ascending=False)
+    df_bot20 = df_sorted.tail(42)
+    df_long = df_bot20.melt(
+        id_vars="Player",
+        value_vars=["All Defense First Team Selection", "All Defense Second Team Selection"],
+        var_name="Team Type",
+        value_name="Selections"
+    )
+
+    fig = px.bar(
+        df_long,
+        x="Player",
+        y="Selections",
+        color="Team Type",
+        barmode="stack",
+        title="Bottom 42 All NBA Defense Selections per Player"
+    )
+    fig.show()
+
+
+    # Finals Appearance Graphs
+    df['Finals Appearance'] = df['Championship'] + df['Finals Lost']
+    df_sorted = df.sort_values("Finals Appearance", ascending=False)
+    df_top20 = df_sorted.head(20)
+    df_long = df_top20.melt(
+        id_vars="Player",
+        value_vars=["Championship", "Finals Lost"],
+        var_name="Type",
+        value_name="Appearances"
+    )
+
+    fig = px.bar(
+        df_long,
+        x="Player",
+        y="Appearances",
+        color="Type",
+        barmode="stack",
+        title="Top 20 Finals Appearance per Player"
+    )
+    fig.show()
+
+    df_bot20 = df_sorted.tail(20)
+    df_long = df_bot20.melt(
+        id_vars="Player",
+        value_vars=["Championship", "Finals Lost"],
+        var_name="Type",
+        value_name="Selections"
+    )
+
+    fig = px.bar(
+        df_long,
+        x="Player",
+        y="Selections",
+        color="Type",
+        barmode="stack",
+        title="Bottom 20 Finals Appearance per Player"
+    )
+    fig.show()
+
+    #Individual Awards graphs ( all stars, mvp,dpoy,finals Mvp)
+    df['Individual Awards'] = df['All Star Selection'] + df['MVP'] + df['DPOY'] + df['Finals MVP']
+    df_sorted = df.sort_values("Individual Awards", ascending=False)
+    df_top20 = df_sorted.head(20)
+    df_long = df_top20.melt(
+        id_vars="Player",
+        value_vars=["All Star Selection", 'MVP', 'DPOY', "Finals MVP"],
+        var_name="Award Type",
+        value_name="Total Awards"
+    )
+
+    fig = px.bar(
+        df_long,
+        x="Player",
+        y="Total Awards",
+        color="Award Type",
+        barmode="stack",
+        title="Top 20 Individual Awards per Player"
+    )
+    fig.show()
+
+    df_bot20 = df_sorted.tail(20)
+    df_long = df_bot20.melt(
+        id_vars="Player",
+        value_vars=["All Star Selection", 'MVP', 'DPOY', "Finals MVP"],
+        var_name="Award Type",
+        value_name="Total Awards"
+    )
+
+    fig = px.bar(
+        df_long,
+        x="Player",
+        y="Total Awards",
+        color="Award Type",
+        barmode="stack",
+        title="Bottom 20 Individual Awards per Player"
+    )
+    fig.show()
+
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     # position_count_pie('top_75')
     # counting_stats('top_75')
-    age('top_75')
+    # age('top_75')
+    # rewards('top_75')
