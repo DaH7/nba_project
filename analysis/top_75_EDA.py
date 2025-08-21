@@ -18,7 +18,7 @@ QUERIES = {
     'test': """
     SELECT * 
     FROM staging.refined_top_75
-    where "Last Year Played" is not 2025
+    where "Last Year Played" != 2025
     
 """
 }
@@ -123,7 +123,7 @@ def counting_stats(query_key):
         x = "Avg PTS Percentile",
         y = "PPG",
         hover_data= ["Player", "First Year Played","Last Year Played", "Positions Played"],
-        title = "PPG vs Avg Points Percentile",
+        title = "PPG vs Points Percentile",
         color = "Position Label",
         color_discrete_map=color_map
     )
@@ -134,7 +134,7 @@ def counting_stats(query_key):
         x = "Avg AST Percentile",
         y = "APG",
         hover_data= ["Player", "First Year Played","Last Year Played", "Positions Played"],
-        title="APG vs Avg Assist Percentile",
+        title="APG vs Assist Percentile",
         color = "Position Label",
         color_discrete_map=color_map
     )
@@ -145,7 +145,7 @@ def counting_stats(query_key):
         x = "Avg REB Percentile",
         y = "RPG",
         hover_data= ["Player", "First Year Played","Last Year Played", "Positions Played"],
-        title = "RPG vs Avg REB Percentile",
+        title = "RPG vs REB Percentile",
         color = "Position Label",
         color_discrete_map=color_map
     )
@@ -156,7 +156,7 @@ def counting_stats(query_key):
         x = "Avg STL Percentile",
         y = "SPG",
         hover_data= ["Player", "First Year Played","Last Year Played", "Positions Played"],
-        title="SPG vs Avg STL Percentile",
+        title="SPG vs STL Percentile",
         color = "Position Label",
         color_discrete_map=color_map
     )
@@ -167,11 +167,17 @@ def counting_stats(query_key):
         x = "Avg BLK Percentile",
         y = "BPG",
         hover_data= ["Player", "First Year Played","Last Year Played", "Positions Played"],
-        title="BPG vs Avg BLK Percentile",
+        title="BPG vs BLK Percentile",
         color = "Position Label",
         color_discrete_map=color_map
     )
     blk_fig.show()
+
+    # pts_fig.write_image("pts_scatter.png")
+    # ast_fig.write_image("ast_scatter.png")
+    # reb_fig.write_image("reb_scatter.png")
+    # stl_fig.write_image("stl_scatter.png")
+    # blk_fig.write_image("blk_scatter.png")
 
 def age(query_key):
     """
@@ -221,6 +227,27 @@ def age(query_key):
     )
     age_fig.show()
 
+    #pie chart breakdown of retirement age
+    age_breakdown = df["Retired Age Label"].value_counts().sort_index()
+    labels = [f"{age} - {count}" for age, count in age_breakdown.items()]
+    values = age_breakdown.values
+
+
+    age_breakdown_fig = px.pie(
+        names=labels,
+        values=values,
+        title="Distribution of Players by Retirement Age"
+    )
+    age_breakdown_fig.update_traces(
+        textinfo='label+percent',
+        textfont_size=14
+    )
+    age_breakdown_fig.update_layout(showlegend=False)
+    age_breakdown_fig.show()
+
+    # age_fig.write_image("retired_age_scatter.png")
+    # age_breakdown_fig.write_image("retired_age_pie.png")
+
 def rewards(query_key):
     """
     List out all achievements from players including mvps, championships, all nba teams, etc...
@@ -246,7 +273,7 @@ def rewards(query_key):
         value_name="Selections"
     )
 
-    fig = px.bar(
+    top_20_all_nba_fig = px.bar(
         df_long,
         x="Player",
         y="Selections",
@@ -255,7 +282,7 @@ def rewards(query_key):
         title="Top 20 All NBA Selections per Player"
     )
 
-    fig.show()
+    top_20_all_nba_fig.show()
     df_bot20 = df_sorted.tail(20)
     df_long = df_bot20.melt(
         id_vars="Player",
@@ -264,7 +291,7 @@ def rewards(query_key):
         value_name="Selections"
     )
 
-    fig = px.bar(
+    bot_20_all_nba_fig = px.bar(
         df_long,
         x="Player",
         y="Selections",
@@ -272,7 +299,7 @@ def rewards(query_key):
         barmode="stack",
         title="Bottom 20 All NBA Selections per Player"
     )
-    fig.show()
+    bot_20_all_nba_fig.show()
 
 
     #All Defense
@@ -285,7 +312,7 @@ def rewards(query_key):
         value_name="Selections"
     )
 
-    fig = px.bar(
+    top_20_all_def_fig = px.bar(
         df_long,
         x="Player",
         y="Selections",
@@ -293,7 +320,7 @@ def rewards(query_key):
         barmode="stack",
         title="Top 20 All NBA Defense Selections per Player"
     )
-    fig.show()
+    top_20_all_def_fig.show()
 
     df_sorted = df.sort_values("All Defense Selection", ascending=False)
     df_bot20 = df_sorted.tail(42)
@@ -304,7 +331,7 @@ def rewards(query_key):
         value_name="Selections"
     )
 
-    fig = px.bar(
+    bot_42_all_def_fig = px.bar(
         df_long,
         x="Player",
         y="Selections",
@@ -312,7 +339,7 @@ def rewards(query_key):
         barmode="stack",
         title="Bottom 42 All NBA Defense Selections per Player"
     )
-    fig.show()
+    bot_42_all_def_fig.show()
 
 
     # Finals Appearance Graphs
@@ -326,7 +353,7 @@ def rewards(query_key):
         value_name="Appearances"
     )
 
-    fig = px.bar(
+    top_20_finals_fig = px.bar(
         df_long,
         x="Player",
         y="Appearances",
@@ -334,7 +361,7 @@ def rewards(query_key):
         barmode="stack",
         title="Top 20 Finals Appearance per Player"
     )
-    fig.show()
+    top_20_finals_fig.show()
 
     df_bot20 = df_sorted.tail(20)
     df_long = df_bot20.melt(
@@ -344,7 +371,7 @@ def rewards(query_key):
         value_name="Selections"
     )
 
-    fig = px.bar(
+    bot_20_finals_fig = px.bar(
         df_long,
         x="Player",
         y="Selections",
@@ -352,7 +379,7 @@ def rewards(query_key):
         barmode="stack",
         title="Bottom 20 Finals Appearance per Player"
     )
-    fig.show()
+    bot_20_finals_fig.show()
 
     #Individual Awards graphs ( all stars, mvp,dpoy,finals Mvp)
     df['Individual Awards'] = df['All Star Selection'] + df['MVP'] + df['DPOY'] + df['Finals MVP']
@@ -365,7 +392,7 @@ def rewards(query_key):
         value_name="Total Awards"
     )
 
-    fig = px.bar(
+    top_20_award_fig = px.bar(
         df_long,
         x="Player",
         y="Total Awards",
@@ -373,7 +400,7 @@ def rewards(query_key):
         barmode="stack",
         title="Top 20 Individual Awards per Player"
     )
-    fig.show()
+    top_20_award_fig.show()
 
     df_bot20 = df_sorted.tail(20)
     df_long = df_bot20.melt(
@@ -383,7 +410,7 @@ def rewards(query_key):
         value_name="Total Awards"
     )
 
-    fig = px.bar(
+    bot_20_award_fig = px.bar(
         df_long,
         x="Player",
         y="Total Awards",
@@ -391,10 +418,16 @@ def rewards(query_key):
         barmode="stack",
         title="Bottom 20 Individual Awards per Player"
     )
-    fig.show()
+    bot_20_award_fig.show()
 
-
-
+    top_20_all_nba_fig.write_image("top_20_all_nba_fig.png")
+    bot_20_all_nba_fig.write_image("bot_20_all_nba_fig.png")
+    top_20_all_def_fig.write_image("top_20_all_def_fig.png")
+    bot_42_all_def_fig.write_image("bot_42_all_def_fig.png")
+    top_20_finals_fig.write_image("top_20_finals_fig.png")
+    bot_20_finals_fig.write_image("bot_20_finals_fig.png")
+    top_20_award_fig.write_image("top_20_award_fig.png")
+    bot_20_award_fig.write_image("bot_20_award_fig.png")
 
 
 
@@ -406,4 +439,5 @@ if __name__ == '__main__':
     # position_count_pie('top_75')
     # counting_stats('top_75')
     # age('top_75')
-    # rewards('top_75')
+    # age('test')
+    rewards('top_75')
