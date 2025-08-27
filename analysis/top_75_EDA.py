@@ -222,7 +222,7 @@ def age(query_key):
         df,
         x = y,
         y = x,
-        hover_data= ["Player", "First Year Played", "Retired Age","Positions Played", ],
+        hover_data= ["Player", "First Year Played", "Last Year Played", "Retired Age","Positions Played", ],
         title = "Retired Age vs Last Year Played",
         color = "Retired Age Label",
         color_discrete_map=color_map,
@@ -251,10 +251,11 @@ def age(query_key):
         textfont_size=14
     )
     age_breakdown_fig.update_layout(showlegend=False)
+    age_breakdown_fig.update_traces(textposition="outside", textinfo="percent+label")
     age_breakdown_fig.show()
 
     # age_fig.write_image("retired_age_scatter.png")
-    # age_breakdown_fig.write_image("retired_age_pie.png")
+    age_breakdown_fig.write_image("retired_age_pie.png")
 
 def rewards(query_key):
     """
