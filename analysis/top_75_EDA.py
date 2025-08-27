@@ -5,6 +5,7 @@ from config import DB_CONFIG
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
+import numpy as np
 
 engine = create_engine(
     f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
@@ -188,6 +189,13 @@ def age(query_key):
 
     df = pd.read_sql(QUERIES[query_key], engine)
 
+    def add_jitter(arr, jitter_strength=0.3):
+        return arr + np.random.uniform(-jitter_strength, jitter_strength, size=len(arr))
+
+    x = add_jitter(df["Retired Age"], jitter_strength=0.2)
+    y = add_jitter(df["Last Year Played"], jitter_strength=0.2)
+
+
     pos_map = {
         'PG': 'G',
         'SG': 'G',
@@ -212,9 +220,9 @@ def age(query_key):
 
     age_fig = px.scatter(
         df,
-        x = "Last Year Played",
-        y = "Retired Age",
-        hover_data= ["Player", "First Year Played", "Positions Played"],
+        x = y,
+        y = x,
+        hover_data= ["Player", "First Year Played", "Retired Age","Positions Played", ],
         title = "Retired Age vs Last Year Played",
         color = "Retired Age Label",
         color_discrete_map=color_map,
@@ -420,14 +428,14 @@ def rewards(query_key):
     )
     bot_20_award_fig.show()
 
-    top_20_all_nba_fig.write_image("top_20_all_nba_fig.png")
-    bot_20_all_nba_fig.write_image("bot_20_all_nba_fig.png")
-    top_20_all_def_fig.write_image("top_20_all_def_fig.png")
-    bot_42_all_def_fig.write_image("bot_42_all_def_fig.png")
-    top_20_finals_fig.write_image("top_20_finals_fig.png")
-    bot_20_finals_fig.write_image("bot_20_finals_fig.png")
-    top_20_award_fig.write_image("top_20_award_fig.png")
-    bot_20_award_fig.write_image("bot_20_award_fig.png")
+    # top_20_all_nba_fig.write_image("top_20_all_nba_fig.png")
+    # bot_20_all_nba_fig.write_image("bot_20_all_nba_fig.png")
+    # top_20_all_def_fig.write_image("top_20_all_def_fig.png")
+    # bot_42_all_def_fig.write_image("bot_42_all_def_fig.png")
+    # top_20_finals_fig.write_image("top_20_finals_fig.png")
+    # bot_20_finals_fig.write_image("bot_20_finals_fig.png")
+    # top_20_award_fig.write_image("top_20_award_fig.png")
+    # bot_20_award_fig.write_image("bot_20_award_fig.png")
 
 
 
@@ -438,6 +446,6 @@ def rewards(query_key):
 if __name__ == '__main__':
     # position_count_pie('top_75')
     # counting_stats('top_75')
-    # age('top_75')
+    age('top_75')
     # age('test')
-    rewards('top_75')
+    # rewards('top_75')
